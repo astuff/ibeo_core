@@ -1,0 +1,3 @@
+- git:
+    local-name: network_interface
+    uri: https://github.com/astuff/network_interface
