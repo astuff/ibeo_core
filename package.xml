@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>ibeo_core</name>
+  <version>2.0.0</version>
+  <description>The ibeo_core package</description>
+  <license>MIT</license>
+  <url type="repository">https://github.com/astuff/ibeo_core</url>
+
+  <maintainer email="software@autonomoustuff.com">AutonomouStuff Software Development Team</maintainer>
+  <author email="jwhitley@autonomoustuff.com">Joshua Whitley</author>
+  <author email="dstanek@autonomoustuff.com">Daniel Stanek</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>network_interface</depend>
+</package>
