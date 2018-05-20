@@ -18,11 +18,10 @@
  *   USA
  */
 
-#include <vector>
 #include <ibeo_core/ibeo_core.h>
 
-using namespace AS::Network;  // NOLINT
-using namespace AS::Drivers::Ibeo;  // NOLINT
+using namespace AS::Network;
+using namespace AS::Drivers::Ibeo;
 
 const int32_t AS::Drivers::Ibeo::ErrorWarning::DATA_TYPE = 0x2030;
 const int32_t AS::Drivers::Ibeo::ScanData2202::DATA_TYPE = 0x2202;
@@ -40,7 +39,7 @@ const int32_t AS::Drivers::Ibeo::HostVehicleState2806::DATA_TYPE = 0x2806;
 const int32_t AS::Drivers::Ibeo::HostVehicleState2807::DATA_TYPE = 0x2807;
 const int32_t AS::Drivers::Ibeo::DeviceStatus::DATA_TYPE = 0x6301;
 
-// Primitive parsing functions
+//Primitive parsing functions
 void MountingPositionF::parse(uint8_t *in)
 {
   yaw_angle = read_be<float>(in, 4, 0);
@@ -133,7 +132,7 @@ void ScannerInfo2205::parse(uint8_t *in)
   resolutions[7].parse(&in[140]);
 }
 
-// Object parsing functions
+//Object parsing functions
 void UntrackedProperties::parse(uint8_t *in)
 {
   relative_time_of_measurement = read_be<uint16_t>(in, 2, 1);
@@ -244,7 +243,7 @@ void ScanPoint2205::parse(uint8_t *in)
 void ScanPoint2208::parse(uint8_t *in)
 {
   echo = (read_be<uint8_t>(in, 1, 0) & 0x0C);
-  layer = read_be<uint8_t>(in, 1, 1);  // & 0x03; < should be whole byte, but this gives unexpected results.
+  layer = read_be<uint8_t>(in, 1, 1);// & 0x03; //< should be whole byte, but this gives unexpected results.
   uint16_t flags = read_be<uint16_t>(in, 2, 2);
   transparent_point = ((flags & 0x0001) > 0);
   clutter_atmospheric = ((flags & 0x0002) > 0);
@@ -374,19 +373,19 @@ void Object2271::parse(uint8_t *in)
   untracked_properties_available = ((properties_available & 0x02) > 0);
   tracked_properties_available = ((properties_available & 0x08) > 0);
 
-  if (untracked_properties_available)
+  if( untracked_properties_available ) 
   {
-    untracked_properties.parse(&in[7]);
+      untracked_properties.parse(&in[7]);
   }
   else
   {
     untracked_properties.number_of_contour_points = 0;
   }
 
-  if (tracked_properties_available)
+  if( tracked_properties_available )
   {
-    tracked_properties.parse(&in[42 + untracked_properties.number_of_contour_points * 8]);
-  }
+      tracked_properties.parse(&in[42 + untracked_properties.number_of_contour_points * 8]);
+  } 
   else
   {
     tracked_properties.number_of_contour_points = 0;
@@ -433,7 +432,7 @@ void Object2280::parse(uint8_t *in)
   }
 }
 
-// High-level message parsers.
+//High-level message parsers.
 void IbeoDataHeader::parse(uint8_t *in)
 {
   previous_message_size = read_be<uint32_t>(in, 4, 4);
@@ -486,57 +485,57 @@ IbeoTxMessage::IbeoTxMessage(bool scan_points, bool contour_points, bool objects
 {}
 
 std::shared_ptr<IbeoTxMessage> IbeoTxMessage::make_message(const uint16_t& data_type)
-{
+{ 
   switch (data_type)
   {
-  case ErrorWarning::DATA_TYPE:
-    return std::shared_ptr<IbeoTxMessage>(new ErrorWarning);
-    break;
-  case ScanData2202::DATA_TYPE:
-    return std::shared_ptr<IbeoTxMessage>(new ScanData2202);
-    break;
-  case ScanData2205::DATA_TYPE:
-    return std::shared_ptr<IbeoTxMessage>(new ScanData2205);
-    break;
-  case ScanData2208::DATA_TYPE:
-    return std::shared_ptr<IbeoTxMessage>(new ScanData2208);
-    break;
-  case ObjectData2221::DATA_TYPE:
-    return std::shared_ptr<IbeoTxMessage>(new ObjectData2221);
-    break;
-  case ObjectData2225::DATA_TYPE:
-    return std::shared_ptr<IbeoTxMessage>(new ObjectData2225);
-    break;
-  case ObjectData2270::DATA_TYPE:
-    return std::shared_ptr<IbeoTxMessage>(new ObjectData2270);
-    break;
-  case ObjectData2271::DATA_TYPE:
-    return std::shared_ptr<IbeoTxMessage>(new ObjectData2271);
-    break;
-  case ObjectData2280::DATA_TYPE:
-    return std::shared_ptr<IbeoTxMessage>(new ObjectData2280);
-    break;
-  case CameraImage::DATA_TYPE:
-    return std::shared_ptr<IbeoTxMessage>(new CameraImage);
-    break;
-  case HostVehicleState2805::DATA_TYPE:
-    return std::shared_ptr<IbeoTxMessage>(new HostVehicleState2805);
-    break;
-  case HostVehicleState2806::DATA_TYPE:
-    return std::shared_ptr<IbeoTxMessage>(new HostVehicleState2806);
-    break;
-  case HostVehicleState2807::DATA_TYPE:
-    return std::shared_ptr<IbeoTxMessage>(new HostVehicleState2807);
-    break;
-  case DeviceStatus::DATA_TYPE:
-    return std::shared_ptr<IbeoTxMessage>(new DeviceStatus);
-    break;
-  default:
-    return NULL;
+    case ErrorWarning::DATA_TYPE:
+      return std::shared_ptr<IbeoTxMessage>(new ErrorWarning);
+      break;
+    case ScanData2202::DATA_TYPE:
+      return std::shared_ptr<IbeoTxMessage>(new ScanData2202);
+      break;
+    case ScanData2205::DATA_TYPE:
+      return std::shared_ptr<IbeoTxMessage>(new ScanData2205);
+      break;
+    case ScanData2208::DATA_TYPE:
+      return std::shared_ptr<IbeoTxMessage>(new ScanData2208);
+      break;
+    case ObjectData2221::DATA_TYPE:
+      return std::shared_ptr<IbeoTxMessage>(new ObjectData2221);
+      break;
+    case ObjectData2225::DATA_TYPE:
+      return std::shared_ptr<IbeoTxMessage>(new ObjectData2225);
+      break;
+    case ObjectData2270::DATA_TYPE:
+      return std::shared_ptr<IbeoTxMessage>(new ObjectData2270);
+      break;
+    case ObjectData2271::DATA_TYPE:
+      return std::shared_ptr<IbeoTxMessage>(new ObjectData2271);
+      break;
+    case ObjectData2280::DATA_TYPE:
+      return std::shared_ptr<IbeoTxMessage>(new ObjectData2280);
+      break;
+    case CameraImage::DATA_TYPE:
+      return std::shared_ptr<IbeoTxMessage>(new CameraImage);
+      break;
+    case HostVehicleState2805::DATA_TYPE:
+      return std::shared_ptr<IbeoTxMessage>(new HostVehicleState2805);
+      break;
+    case HostVehicleState2806::DATA_TYPE:
+      return std::shared_ptr<IbeoTxMessage>(new HostVehicleState2806);
+      break;
+    case HostVehicleState2807::DATA_TYPE:
+      return std::shared_ptr<IbeoTxMessage>(new HostVehicleState2807);
+      break;
+    case DeviceStatus::DATA_TYPE:
+      return std::shared_ptr<IbeoTxMessage>(new DeviceStatus);
+      break;
+    default:
+      return NULL;
   }
 }
 
-std::vector<Point3DL> IbeoTxMessage::get_scan_points()  // <-- virtual
+std::vector<Point3DL> IbeoTxMessage::get_scan_points() //<-- virtual
 {
   return std::vector<Point3DL>();
 }
@@ -562,46 +561,46 @@ void ErrorWarning::parse(uint8_t *in)
   uint16_t wrn_reg_1 = read_le<uint16_t>(in, 2, 4);
   uint16_t wrn_reg_2 = read_le<uint16_t>(in, 2, 6);
 
-  err_internal_error = ((err_reg_1 & 0x0001) > 0);
-  err_motor_1_fault = ((err_reg_1 & 0x0002) > 0);
-  err_buffer_error_xmt_incomplete = ((err_reg_1 & 0x0004) > 0);
-  err_buffer_error_overflow = ((err_reg_1 & 0x0008) > 0);
-  err_apd_over_temperature = ((err_reg_1 & 0x0100) > 0);
-  err_apd_under_temperature = ((err_reg_1 & 0x0200) > 0);
-  err_apd_temperature_sensor_defect = (err_apd_over_temperature && err_apd_under_temperature);
-  err_motor_2_fault = ((err_reg_1 & 0x0400) > 0);
-  err_motor_3_fault = ((err_reg_1 & 0x0800) > 0);
-  err_motor_4_fault = ((err_reg_1 & 0x1000) > 0);
-  err_motor_5_fault = ((err_reg_1 & 0x2000) > 0);
+	err_internal_error = ((err_reg_1 & 0x0001) > 0);
+	err_motor_1_fault = ((err_reg_1 & 0x0002) > 0);
+	err_buffer_error_xmt_incomplete = ((err_reg_1 & 0x0004) > 0);
+	err_buffer_error_overflow = ((err_reg_1 & 0x0008) > 0);
+	err_apd_over_temperature = ((err_reg_1 & 0x0100) > 0);
+	err_apd_under_temperature = ((err_reg_1 & 0x0200) > 0);
+	err_apd_temperature_sensor_defect = (err_apd_over_temperature && err_apd_under_temperature);
+	err_motor_2_fault = ((err_reg_1 & 0x0400) > 0);
+	err_motor_3_fault = ((err_reg_1 & 0x0800) > 0);
+	err_motor_4_fault = ((err_reg_1 & 0x1000) > 0);
+	err_motor_5_fault = ((err_reg_1 & 0x2000) > 0);
 
-  err_int_no_scan_data = ((err_reg_2 & 0x0001) > 0);
-  err_int_communication_error = ((err_reg_2 & 0x0002) > 0);
-  err_int_incorrect_scan_data = ((err_reg_2 & 0x0004) > 0);
-  err_config_fpga_not_configurable = ((err_reg_2 & 0x0008) > 0);
-  err_config_incorrect_config_data = ((err_reg_2 & 0x0010) > 0);
-  err_config_contains_incorrect_params = ((err_reg_2 & 0x0020) > 0);
-  err_timeout_data_processing = ((err_reg_2 & 0x0040) > 0);
-  err_timeout_env_model_computation_reset = ((err_reg_2 & 0x0080) > 0);
+	err_int_no_scan_data = ((err_reg_2 & 0x0001) > 0);
+	err_int_communication_error = ((err_reg_2 & 0x0002) > 0);
+	err_int_incorrect_scan_data = ((err_reg_2 & 0x0004) > 0);
+	err_config_fpga_not_configurable = ((err_reg_2 & 0x0008) > 0);
+	err_config_incorrect_config_data = ((err_reg_2 & 0x0010) > 0);
+	err_config_contains_incorrect_params = ((err_reg_2 & 0x0020) > 0);
+	err_timeout_data_processing = ((err_reg_2 & 0x0040) > 0);
+	err_timeout_env_model_computation_reset = ((err_reg_2 & 0x0080) > 0);
 
-  wrn_int_communication_error = ((wrn_reg_1 & 0x0001) > 0);
-  wrn_low_temperature = ((wrn_reg_1 & 0x0008) > 0);
-  wrn_high_temperature = ((wrn_reg_1 & 0x0010) > 0);
-  wrn_int_motor_1 = ((wrn_reg_1 & 0x0020) > 0);
-  wrn_sync_error = ((wrn_reg_1 & 0x0080) > 0);
-  wrn_laser_1_start_pulse_missing = ((wrn_reg_1 & 0x1000) > 0);
-  wrn_laser_2_start_pulse_missing = ((wrn_reg_1 & 0x2000) > 0);
+	wrn_int_communication_error = ((wrn_reg_1 & 0x0001) > 0);
+	wrn_low_temperature = ((wrn_reg_1 & 0x0008) > 0);
+	wrn_high_temperature = ((wrn_reg_1 & 0x0010) > 0);
+	wrn_int_motor_1 = ((wrn_reg_1 & 0x0020) > 0);
+	wrn_sync_error = ((wrn_reg_1 & 0x0080) > 0);
+	wrn_laser_1_start_pulse_missing = ((wrn_reg_1 & 0x1000) > 0);
+	wrn_laser_2_start_pulse_missing = ((wrn_reg_1 & 0x2000) > 0);
 
-  wrn_can_interface_blocked = ((wrn_reg_2 & 0x0001) > 0);
-  wrn_eth_interface_blocked = ((wrn_reg_2 & 0x0002) > 0);
-  wrn_incorrect_can_data_rcvd = ((wrn_reg_2 & 0x0004) > 0);
-  wrn_int_incorrect_scan_data = ((wrn_reg_2 & 0x0008) > 0);
+	wrn_can_interface_blocked = ((wrn_reg_2 & 0x0001) > 0);
+	wrn_eth_interface_blocked = ((wrn_reg_2 & 0x0002) > 0);
+	wrn_incorrect_can_data_rcvd = ((wrn_reg_2 & 0x0004) > 0);
+	wrn_int_incorrect_scan_data = ((wrn_reg_2 & 0x0008) > 0);
   wrn_eth_unkwn_incomplete_data = ((wrn_reg_2 & 0x0010) > 0);
-  wrn_incorrect_or_forbidden_cmd_rcvd = ((wrn_reg_2 & 0x0020) > 0);
-  wrn_memory_access_failure = ((wrn_reg_2 & 0x0040) > 0);
-  wrn_int_overflow = ((wrn_reg_2 & 0x0080) > 0);
-  wrn_ego_motion_data_missing = ((wrn_reg_2 & 0x0100) > 0);
-  wrn_incorrect_mounting_params = ((wrn_reg_2 & 0x0200) > 0);
-  wrn_no_obj_comp_due_to_scan_freq = ((wrn_reg_2 & 0x0400) > 0);
+	wrn_incorrect_or_forbidden_cmd_rcvd = ((wrn_reg_2 & 0x0020) > 0);
+	wrn_memory_access_failure = ((wrn_reg_2 & 0x0040) > 0);
+	wrn_int_overflow = ((wrn_reg_2 & 0x0080) > 0);
+	wrn_ego_motion_data_missing = ((wrn_reg_2 & 0x0100) > 0);
+	wrn_incorrect_mounting_params = ((wrn_reg_2 & 0x0200) > 0);
+	wrn_no_obj_comp_due_to_scan_freq = ((wrn_reg_2 & 0x0400) > 0);
 }
 
 ScanData2202::ScanData2202() :
@@ -611,7 +610,7 @@ ScanData2202::ScanData2202() :
 void ScanData2202::parse(uint8_t *in)
 {
   ibeo_header.parse(in);
-
+  
   in = &in[IBEO_HEADER_SIZE];
 
   scan_number = read_le<uint16_t>(in, 2, 0);
@@ -649,9 +648,9 @@ std::vector<Point3DL> ScanData2202::get_scan_points()
   std::vector<Point3DL> v;
   double cm_to_m = 100.0;
 
-  for (ScanPoint2202 sp : scan_point_list)
+  for( ScanPoint2202 sp : scan_point_list )
   {
-    if (sp.echo == 0 && sp.layer < 4 && !sp.transparent_point && !sp.clutter_atmospheric && !sp.ground && !sp.dirt)
+    if(sp.echo == 0 && sp.layer < 4 && !sp.transparent_point && !sp.clutter_atmospheric && !sp.ground && !sp.dirt)
     {
       // Spherical coordinates to cartesian
       // This uses the following conventions (with right-hand rule applied):
@@ -659,26 +658,26 @@ std::vector<Point3DL> ScanData2202::get_scan_points()
       // theta = angle away from Z+ (radians)
       // rho = radial distance (m)
       Point3DL p3d;
-      double phi = ticks_to_angle(sp.horizontal_angle, angle_ticks_per_rotation);
+      double phi = ticks_to_angle( sp.horizontal_angle, angle_ticks_per_rotation);
       double theta;
       double rho = sp.radial_distance / cm_to_m;
 
       switch (sp.layer)
       {
-      case 0:
-        theta = (88.4 * (M_PI / 180.0));
-        break;
-      case 1:
-        theta = (89.2 * (M_PI / 180.0));
-        break;
-      case 2:
-        theta = (90.8 * (M_PI / 180.0));
-        break;
-      case 3:
-        theta = (91.6 * (M_PI / 180.0));
-        break;
+        case 0:
+          theta = (88.4 * (M_PI / 180.0));
+          break;
+        case 1:
+          theta = (89.2 * (M_PI / 180.0));
+          break;
+        case 2:
+          theta = (90.8 * (M_PI / 180.0));
+          break;
+        case 3:
+          theta = (91.6 * (M_PI / 180.0));
+          break;
       }
-
+    
       p3d.x = rho * sin(theta) * cos(phi);
       p3d.y = rho * sin(theta) * sin(phi);
       p3d.z = rho * cos(theta);
@@ -736,17 +735,17 @@ std::vector<Point3DL> ScanData2204::get_scan_points()
 {
   std::vector<Point3DL> v;
 
-  for (ScanPoint2204 sp : scan_point_list)
+  for (ScanPoint2204 sp : scan_point_list )
   {
-    if (sp.echo == 0 && sp.layer < 4 && !sp.ground && !sp.dirt && !sp.precipitation)
+    if (sp.echo == 0 && sp.layer < 4 && !sp.ground && !sp.dirt && !sp.precipitation )
     {
       Point3DL p3d;
-
+    
       p3d.x = sp.x_position;
       p3d.y = sp.y_position;
       p3d.z = sp.z_position;
       p3d.label = sp.layer;
-      v.push_back(p3d);
+      v.push_back(p3d);   
     }
   }
 
@@ -762,7 +761,7 @@ void ScanData2205::parse(uint8_t *in)
   ibeo_header.parse(in);
 
   in = &in[IBEO_HEADER_SIZE];
-
+  
   scan_start_time = read_be<NTPTime>(in, 8, 0);
   scan_end_time_offset = read_be<uint32_t>(in, 4, 8);
 
@@ -775,7 +774,7 @@ void ScanData2205::parse(uint8_t *in)
   scan_points = read_be<uint16_t>(in, 2, 18);
   number_of_scanner_infos = read_be<uint8_t>(in, 1, 20);
 
-  // printf("%d SCAN POINTS REPORTED\n", scan_points);
+  //printf("%d SCAN POINTS REPORTED\n", scan_points);
 
   for (uint8_t i = 0; i < number_of_scanner_infos; i++)
   {
@@ -796,17 +795,17 @@ std::vector<Point3DL> ScanData2205::get_scan_points()
 {
   std::vector<Point3DL> v;
 
-  for (ScanPoint2205 sp : scan_point_list)
+  for (ScanPoint2205 sp : scan_point_list )
   {
-    if (sp.echo == 0 && sp.layer < 4 && !sp.transparent && !sp.ground && !sp.dirt && !sp.precipitation)
+    if (sp.echo == 0 && sp.layer < 4 && !sp.transparent && !sp.ground && !sp.dirt && !sp.precipitation )
     {
       Point3DL p3d;
-
+    
       p3d.x = sp.x_position;
       p3d.y = sp.y_position;
       p3d.z = sp.z_position;
       p3d.label = sp.layer;
-      v.push_back(p3d);
+      v.push_back(p3d);   
     }
   }
 
@@ -861,9 +860,9 @@ std::vector<Point3DL> ScanData2208::get_scan_points()
   std::vector<Point3DL> v;
   double cm_to_m = 100.0;
 
-  for (ScanPoint2208 sp : scan_point_list)
+  for( ScanPoint2208 sp : scan_point_list )
   {
-    if (sp.echo == 0 && sp.layer < 4 && !sp.transparent_point && !sp.clutter_atmospheric && !sp.ground && !sp.dirt)
+    if(sp.echo == 0 && sp.layer < 4 && !sp.transparent_point && !sp.clutter_atmospheric && !sp.ground && !sp.dirt )
     {
       // Spherical coordinates to cartesian
       // This uses the following conventions (with right-hand rule applied):
@@ -871,26 +870,26 @@ std::vector<Point3DL> ScanData2208::get_scan_points()
       // theta = angle away from Z+ (radians)
       // rho = radial distance (m)
       Point3DL p3d;
-      double phi = ticks_to_angle(sp.horizontal_angle, angle_ticks_per_rotation);
+      double phi = ticks_to_angle( sp.horizontal_angle, angle_ticks_per_rotation);
       double theta;
       double rho = sp.radial_distance / cm_to_m;
 
       switch (sp.layer)
       {
-      case 0:
-        theta = (88.4 * (M_PI / 180.0));
-        break;
-      case 1:
-        theta = (89.2 * (M_PI / 180.0));
-        break;
-      case 2:
-        theta = (90.8 * (M_PI / 180.0));
-        break;
-      case 3:
-        theta = (91.6 * (M_PI / 180.0));
-        break;
+        case 0:
+          theta = (88.4 * (M_PI / 180.0));
+          break;
+        case 1:
+          theta = (89.2 * (M_PI / 180.0));
+          break;
+        case 2:
+          theta = (90.8 * (M_PI / 180.0));
+          break;
+        case 3:
+          theta = (91.6 * (M_PI / 180.0));
+          break;
       }
-
+    
       p3d.x = rho * sin(theta) * cos(phi);
       p3d.y = rho * sin(theta) * sin(phi);
       p3d.z = rho * cos(theta);
@@ -926,8 +925,8 @@ void ObjectData2221::parse(uint8_t *in)
     Object2221 new_object;
     new_object.parse(&in[offset]);
     object_list.push_back(new_object);
-    offset += 58;  // Size of object without contour points.
-    offset += new_object.number_of_contour_points * 4;  // Size of object's contour points.
+    offset += 58; //Size of object without contour points.
+    offset += new_object.number_of_contour_points * 4; //Size of object's contour points.
   }
 }
 
@@ -940,8 +939,8 @@ std::vector<Point3D> ObjectData2221::get_contour_points()
     for (Point2Di p2d : o.contour_point_list)
     {
       Point3D p3d;
-      p3d.x = static_cast<double>(p2d.x) / 100.0;
-      p3d.y = static_cast<double>(p2d.y) / 100.0;
+      p3d.x = (double) p2d.x / 100.0;
+      p3d.y = (double) p2d.y / 100.0;
       p3d.z = 0.0;
       contour_points.push_back(p3d);
     }
@@ -962,30 +961,30 @@ std::vector<IbeoObject> ObjectData2221::get_objects()
     io.age = o.age;
     io.prediction_age = o.prediction_age;
     io.relative_timestamp = o.relative_timestamp;
-    io.reference_point.x = o.reference_point.x / 100.0;  // In cm
-    io.reference_point.y = o.reference_point.y / 100.0;  // In cm
-    io.reference_point_sigma.x = o.reference_point_sigma.x / 100.0;  // In cm
-    io.reference_point_sigma.y = o.reference_point_sigma.y / 100.0;  // In cm
-    io.closest_point.x = o.closest_point.x / 100.0;  // In cm
-    io.closest_point.y = o.closest_point.y / 100.0;  // In cm
+    io.reference_point.x = o.reference_point.x / 100.0; // In cm
+    io.reference_point.y = o.reference_point.y / 100.0; // In cm
+    io.reference_point_sigma.x = o.reference_point_sigma.x / 100.0; // In cm
+    io.reference_point_sigma.y = o.reference_point_sigma.y / 100.0; // In cm
+    io.closest_point.x = o.closest_point.x / 100.0; // In cm
+    io.closest_point.y = o.closest_point.y / 100.0; // In cm
 
-    io.bounding_box_center.x = o.bounding_box_center.x / 100.0;  // In cm
-    io.bounding_box_center.y = o.bounding_box_center.y / 100.0;  // In cm
-    io.bounding_box_size.size_x = o.bounding_box_width / 100.0;  // In cm
-    io.bounding_box_size.size_y = o.bounding_box_length / 100.0;  // In cm
+    io.bounding_box_center.x = o.bounding_box_center.x / 100.0; // In cm
+    io.bounding_box_center.y = o.bounding_box_center.y / 100.0; // In cm
+    io.bounding_box_size.size_x = o.bounding_box_width / 100.0; // In cm
+    io.bounding_box_size.size_y = o.bounding_box_length / 100.0; // In cm
 
-    io.object_box_center.x = o.object_box_center.x / 100.0;  // In cm
-    io.object_box_center.y = o.object_box_center.y / 100.0;  // In cm
-    io.object_box_size.size_x = o.object_box_size.size_x / 100.0;  // In cm
-    io.object_box_size.size_y = o.object_box_size.size_y / 100.0;  // In cm
-    io.object_box_orientation = o.object_box_orientation / 100.0 * (M_PI / 180.0);  // In 1/100 degrees.
+    io.object_box_center.x = o.object_box_center.x / 100.0; // In cm
+    io.object_box_center.y = o.object_box_center.y / 100.0; // In cm
+    io.object_box_size.size_x = o.object_box_size.size_x / 100.0; // In cm
+    io.object_box_size.size_y = o.object_box_size.size_y / 100.0; // In cm
+    io.object_box_orientation = o.object_box_orientation / 100.0 * (M_PI / 180.0); // In 1/100 degrees.
 
-    io.absolute_velocity.x = o.absolute_velocity.x / 100.0;  // In cm/s
-    io.absolute_velocity.y = o.absolute_velocity.y / 100.0;  // In cm/s
-    io.absolute_velocity_sigma.x = o.absolute_velocity_sigma.size_x / 100.0;  // In cm/s
-    io.absolute_velocity_sigma.y = o.absolute_velocity_sigma.size_y / 100.0;  // In cm/s
-    io.relative_velocity.x = o.relative_velocity.x / 100.0;  // In cm/s
-    io.relative_velocity.y = o.relative_velocity.y / 100.0;  // In cm/s
+    io.absolute_velocity.x = o.absolute_velocity.x / 100.0; // In cm/s
+    io.absolute_velocity.y = o.absolute_velocity.y / 100.0; // In cm/s
+    io.absolute_velocity_sigma.x = o.absolute_velocity_sigma.size_x / 100.0; // In cm/s
+    io.absolute_velocity_sigma.y = o.absolute_velocity_sigma.size_y / 100.0; // In cm/s
+    io.relative_velocity.x = o.relative_velocity.x / 100.0; // In cm/s
+    io.relative_velocity.y = o.relative_velocity.y / 100.0; // In cm/s
 
     io.classification = static_cast<uint16_t>(o.classification);
     io.classification_age = o.classification_age;
@@ -994,7 +993,7 @@ std::vector<IbeoObject> ObjectData2221::get_objects()
     io.number_of_contour_points = o.number_of_contour_points;
 
     io.contour_point_list = get_contour_points();
-
+    
     io_list.push_back(io);
   }
 
@@ -1013,7 +1012,7 @@ void ObjectData2225::parse(uint8_t *in)
 
   mid_scan_timestamp = read_be<NTPTime>(in, 8, 0);
   number_of_objects = read_be<uint16_t>(in, 2, 8);
-
+  
   uint32_t offset = 10;
 
   for (uint16_t i = 0; i < number_of_objects; i++)
@@ -1021,8 +1020,8 @@ void ObjectData2225::parse(uint8_t *in)
     Object2225 new_object;
     new_object.parse(&in[offset]);
     object_list.push_back(new_object);
-    offset += 132;                                      // Add size of single object without contour points.
-    offset += new_object.number_of_contour_points * 8;  // Add size of just-parsed object's contour points.
+    offset += 132;                                  //Add size of single object without contour points.
+    offset += new_object.number_of_contour_points * 8;  //Add size of just-parsed object's contour points.
   }
 }
 
@@ -1030,13 +1029,13 @@ std::vector<Point3D> ObjectData2225::get_contour_points()
 {
   std::vector<Point3D> contour_points;
 
-  for (Object2225 o : object_list)
+  for( Object2225 o : object_list )
   {
-    for (Point2Df p2d : o.contour_point_list)
+    for( Point2Df p2d : o.contour_point_list )
     {
       Point3D p3d;
-      p3d.x = static_cast<double>(p2d.x) / 100.0;
-      p3d.y = static_cast<double>(p2d.y) / 100.0;
+      p3d.x = (double) p2d.x / 100.0;
+      p3d.y = (double) p2d.y / 100.0;
       p3d.z = 0.0;
       contour_points.push_back(p3d);
     }
@@ -1052,20 +1051,20 @@ std::vector<IbeoObject> ObjectData2225::get_objects()
   for (Object2225 o : object_list)
   {
     IbeoObject io;
-    io.id = o.id;
+    io.id = o.id; 
     io.age = o.age;
-    io.prediction_age = 0;
-    io.relative_timestamp = 0;
+    io.prediction_age = 0; 
+    io.relative_timestamp = 0; 
     io.object_coordinate_system = VEHICLE;
 
-    io.classification = o.classification;
-    io.classification_age = o.classification_age;
+    io.classification = o.classification;       
+    io.classification_age = o.classification_age;      
     io.classification_certainty = o.classification_certainty;
 
     io.bounding_box_center.x = o.bounding_box_center.x;
     io.bounding_box_center.y = o.bounding_box_center.y;
-    io.bounding_box_size.size_x = o.bounding_box_size.x;
-    io.bounding_box_size.size_y = o.bounding_box_size.y;
+    io.bounding_box_size.size_x = o.bounding_box_size.x; 
+    io.bounding_box_size.size_y = o.bounding_box_size.y;      
 
     io.object_box_center.x = o.object_box_center.x;
     io.object_box_center.y = o.object_box_center.y;
@@ -1081,7 +1080,7 @@ std::vector<IbeoObject> ObjectData2225::get_objects()
     io.relative_velocity.y = o.relative_velocity.y;
 
     io.contour_point_list = get_contour_points();
-
+    
     // In theory, this should still hold.
     io.closest_point.x = io.contour_point_list[o.closest_point_index].x;
     io.closest_point.y = io.contour_point_list[o.closest_point_index].y;
@@ -1115,8 +1114,8 @@ void ObjectData2270::parse(uint8_t *in)
     new_object.parse(&in[offset]);
     object_list.push_back(new_object);
 
-    offset += 76;                                       // Add size of single object without contour points.
-    offset += new_object.number_of_contour_points * 4;  // Add size of just-parsed object's contour points.
+    offset += 76;                                   //Add size of single object without contour points.
+    offset += new_object.number_of_contour_points * 4;  //Add size of just-parsed object's contour points.
   }
 }
 
@@ -1124,13 +1123,13 @@ std::vector<Point3D> ObjectData2270::get_contour_points()
 {
   std::vector<Point3D> contour_points;
 
-  for (Object2270 o : object_list)
+  for( Object2270 o : object_list )
   {
-    for (Point2Di p2d : o.contour_point_list)
+    for( Point2Di p2d : o.contour_point_list )
     {
       Point3D p3d;
-      p3d.x = static_cast<double>(p2d.x) / 100.0;
-      p3d.y = static_cast<double>(p2d.y) / 100.0;
+      p3d.x = (double) p2d.x / 100.0;
+      p3d.y = (double) p2d.y / 100.0;
       p3d.z = 0.0;
       contour_points.push_back(p3d);
     }
@@ -1143,80 +1142,80 @@ std::vector<IbeoObject> ObjectData2270::get_objects()
 {
   std::vector<IbeoObject> io_list;
 
-  for (Object2270 o : object_list)
+  for( Object2270 o : object_list )
   {
     IbeoObject io;
-    io.id = o.id;
-    io.age = o.age;
-    io.prediction_age = o.prediction_age;
-    io.relative_timestamp = 0;
+    io.id = o.id; 
+    io.age = o.age;                      
+    io.prediction_age = o.prediction_age; 
+    io.relative_timestamp = 0; 
 
     io.object_coordinate_system = VEHICLE;
 
     io.reference_point_location = o.reference_point_location;
-    io.reference_point.x = o.reference_point_position_x / 100.0;  // In cm
-    io.reference_point.y = o.reference_point_position_y / 100.0;  // In cm
-    io.reference_point_sigma.x = o.reference_point_position_sigma_x / 100.0;  // In cm
-    io.reference_point_sigma.y = o.reference_point_position_sigma_y / 100.0;  // In cm
+    io.reference_point.x = o.reference_point_position_x / 100.0; // In cm
+    io.reference_point.y = o.reference_point_position_y / 100.0; // In cm
+    io.reference_point_sigma.x = o.reference_point_position_sigma_x / 100.0; // In cm
+    io.reference_point_sigma.y = o.reference_point_position_sigma_y / 100.0; // In cm
 
-    io.object_box_size.size_x = o.object_box_length / 100.0;  // In cm
-    io.object_box_size.size_y = o.object_box_width / 100.0;  // In cm
-    io.object_box_orientation = o.object_box_orientation_angle / 100.0 * (M_PI / 180.0);  // In 1/100 of a degree
+    io.object_box_size.size_x = o.object_box_length / 100.0; // In cm
+    io.object_box_size.size_y = o.object_box_width / 100.0; // In cm
+    io.object_box_orientation = o.object_box_orientation_angle / 100.0 * (M_PI / 180.0); // In 1/100 of a degree
 
     float half_box_x = io.object_box_size.size_x / 2.0;
     float half_box_y = io.object_box_size.size_y / 2.0;
 
     switch (o.reference_point_location)
     {
-    case COG:
-      io.object_box_center.x = o.contour_points_cog_x / 100.0;  // In cm
-      io.object_box_center.y = o.contour_points_cog_y / 100.0;  // In cm
-      break;
-    case TOP_FRONT_LEFT_CORNER:
-      io.object_box_center.x = io.reference_point.x - half_box_x;
-      io.object_box_center.y = io.reference_point.y - half_box_y;
-      break;
-    case TOP_FRONT_RIGHT_CORNER:
-      io.object_box_center.x = io.reference_point.x - half_box_x;
-      io.object_box_center.y = io.reference_point.y + half_box_y;
-      break;
-    case BOTTOM_REAR_RIGHT_CORNER:
-      io.object_box_center.x = io.reference_point.x + half_box_x;
-      io.object_box_center.y = io.reference_point.y + half_box_y;
-      break;
-    case BOTTOM_REAR_LEFT_CORNER:
-      io.object_box_center.x = io.reference_point.x + half_box_x;
-      io.object_box_center.y = io.reference_point.y - half_box_y;
-      break;
-    case CENTER_OF_TOP_FRONT_EDGE:
-      io.object_box_center.x = io.reference_point.x - half_box_x;
-      io.object_box_center.y = io.reference_point.y;
-      break;
-    case CENTER_OF_RIGHT_EDGE:
-      io.object_box_center.x = io.reference_point.x;
-      io.object_box_center.y = io.reference_point.y + half_box_y;
-      break;
-    case CENTER_OF_BOTTOM_REAR_EDGE:
-      io.object_box_center.x = io.reference_point.x + half_box_x;
-      io.object_box_center.y = io.reference_point.y;
-      break;
-    case CENTER_OF_LEFT_EDGE:
-      io.object_box_center.x = io.reference_point.x;
-      io.object_box_center.y = io.reference_point.y - half_box_y;
-      break;
-    case BOX_CENTER:
-    case INVALID:
-      io.object_box_center.x = io.reference_point.x;
-      io.object_box_center.y = io.reference_point.y;
-      break;
+      case COG:
+        io.object_box_center.x = o.contour_points_cog_x / 100.0; // In cm
+        io.object_box_center.y = o.contour_points_cog_y / 100.0; // In cm
+        break;
+      case TOP_FRONT_LEFT_CORNER:
+        io.object_box_center.x = io.reference_point.x - half_box_x;
+        io.object_box_center.y = io.reference_point.y - half_box_y;
+        break;
+      case TOP_FRONT_RIGHT_CORNER:
+        io.object_box_center.x = io.reference_point.x - half_box_x;
+        io.object_box_center.y = io.reference_point.y + half_box_y;
+        break;
+      case BOTTOM_REAR_RIGHT_CORNER:
+        io.object_box_center.x = io.reference_point.x + half_box_x;
+        io.object_box_center.y = io.reference_point.y + half_box_y;
+        break;
+      case BOTTOM_REAR_LEFT_CORNER:
+        io.object_box_center.x = io.reference_point.x + half_box_x;
+        io.object_box_center.y = io.reference_point.y - half_box_y;
+        break;
+      case CENTER_OF_TOP_FRONT_EDGE:
+        io.object_box_center.x = io.reference_point.x - half_box_x;
+        io.object_box_center.y = io.reference_point.y;
+        break;
+      case CENTER_OF_RIGHT_EDGE:
+        io.object_box_center.x = io.reference_point.x;
+        io.object_box_center.y = io.reference_point.y + half_box_y;
+        break;
+      case CENTER_OF_BOTTOM_REAR_EDGE:
+        io.object_box_center.x = io.reference_point.x + half_box_x;
+        io.object_box_center.y = io.reference_point.y;
+        break;
+      case CENTER_OF_LEFT_EDGE:
+        io.object_box_center.x = io.reference_point.x;
+        io.object_box_center.y = io.reference_point.y - half_box_y;
+        break;
+      case BOX_CENTER:
+      case INVALID:
+        io.object_box_center.x = io.reference_point.x;
+        io.object_box_center.y = io.reference_point.y;
+        break;
     }
 
-    io.absolute_velocity.x = o.absolute_velocity_x / 100.0;  // In cm/s
-    io.absolute_velocity.y = o.absolute_velocity_y / 100.0;  // In cm/s
-    io.absolute_velocity_sigma.x = o.absolute_velocity_sigma_x / 100.0;  // In cm/s
-    io.absolute_velocity_sigma.y = o.absolute_velocity_sigma_y / 100.0;  // In cm/s
-    io.relative_velocity.x = o.relative_velocity_x / 100.0;  // In cm/s
-    io.relative_velocity.y = o.relative_velocity_y / 100.0;  // In cm/s
+    io.absolute_velocity.x = o.absolute_velocity_x / 100.0; // In cm/s
+    io.absolute_velocity.y = o.absolute_velocity_y / 100.0; // In cm/s
+    io.absolute_velocity_sigma.x = o.absolute_velocity_sigma_x / 100.0; // In cm/s
+    io.absolute_velocity_sigma.y = o.absolute_velocity_sigma_y / 100.0; // In cm/s
+    io.relative_velocity.x = o.relative_velocity_x / 100.0; // In cm/s
+    io.relative_velocity.y = o.relative_velocity_y / 100.0; // In cm/s
 
     io.contour_point_list = get_contour_points();
     io.number_of_contour_points = (uint16_t) io.contour_point_list.size();
@@ -1250,11 +1249,9 @@ void ObjectData2271::parse(uint8_t *in)
     object_list.push_back(new_object);
 
     // calculate offset for the next object (i+1)
-    offset += (118 + 4);  // Add size of single object without contour points.
-    // Add size of just-parsed object's untracked contour points.
-    offset += new_object.untracked_properties.number_of_contour_points * 8;
-    // Add size of just-parsed object's tracked contour points.
-    offset += new_object.tracked_properties.number_of_contour_points * 8;
+    offset += ( 118 + 4 );//(7 + 35 + 76);                                     //Add size of single object without contour points.
+    offset += new_object.untracked_properties.number_of_contour_points * 8; //Add size of just-parsed object's untracked contour points.
+    offset += new_object.tracked_properties.number_of_contour_points * 8;   //Add size of just-parsed object's tracked contour points.
   }
 }
 
@@ -1310,8 +1307,8 @@ std::vector<IbeoObject> ObjectData2271::get_objects()
     io.bounding_box_size.size_x = 0;
     io.bounding_box_size.size_y = 0;
     io.object_box_orientation = 0;
-    io.classification = UNCLASSIFIED;
-    io.classification_age = 0;
+    io.classification = UNCLASSIFIED; 
+    io.classification_age = 0;      
     io.classification_certainty = 0;
 
     if (o.tracked_properties_available)
@@ -1319,90 +1316,88 @@ std::vector<IbeoObject> ObjectData2271::get_objects()
       io.age = o.tracked_properties.object_age;
       io.relative_timestamp = o.tracked_properties.relative_time_of_measure;
 
-      io.closest_point.x = o.tracked_properties.position_closest_point.x / 100.0;  // In cm
-      io.closest_point.y = o.tracked_properties.position_closest_point.y / 100.0;  // In cm
+      io.closest_point.x = o.tracked_properties.position_closest_point.x / 100.0; // In cm
+      io.closest_point.y = o.tracked_properties.position_closest_point.y / 100.0; // In cm
 
-      io.object_box_size.size_x = o.tracked_properties.object_box_size.x / 100.0;  // In cm
-      io.object_box_size.size_y = o.tracked_properties.object_box_size.y / 100.0;  // In cm
-      io.object_box_orientation = o.tracked_properties.object_box_orientation /
-                                  100.0 * (M_PI / 180.0);  // In 1/100 of a degree
+      io.object_box_size.size_x = o.tracked_properties.object_box_size.x / 100.0; // In cm
+      io.object_box_size.size_y = o.tracked_properties.object_box_size.y / 100.0; // In cm
+      io.object_box_orientation = o.tracked_properties.object_box_orientation / 100.0 * (M_PI / 180.0); // In 1/100 of a degree
 
       float half_box_x = io.object_box_size.size_x / 2.0;
       float half_box_y = io.object_box_size.size_y / 2.0;
 
       switch (o.tracked_properties.tracking_point_location)
       {
-      case TOP_FRONT_LEFT_CORNER:
-        io.object_box_center.x = io.reference_point.x - half_box_x;
-        io.object_box_center.y = io.reference_point.y - half_box_y;
-        break;
-      case TOP_FRONT_RIGHT_CORNER:
-        io.object_box_center.x = io.reference_point.x - half_box_x;
-        io.object_box_center.y = io.reference_point.y + half_box_y;
-        break;
-      case BOTTOM_REAR_RIGHT_CORNER:
-        io.object_box_center.x = io.reference_point.x + half_box_x;
-        io.object_box_center.y = io.reference_point.y + half_box_y;
-        break;
-      case BOTTOM_REAR_LEFT_CORNER:
-        io.object_box_center.x = io.reference_point.x + half_box_x;
-        io.object_box_center.y = io.reference_point.y - half_box_y;
-        break;
-      case CENTER_OF_TOP_FRONT_EDGE:
-        io.object_box_center.x = io.reference_point.x - half_box_x;
-        io.object_box_center.y = io.reference_point.y;
-        break;
-      case CENTER_OF_RIGHT_EDGE:
-        io.object_box_center.x = io.reference_point.x;
-        io.object_box_center.y = io.reference_point.y + half_box_y;
-        break;
-      case CENTER_OF_BOTTOM_REAR_EDGE:
-        io.object_box_center.x = io.reference_point.x + half_box_x;
-        io.object_box_center.y = io.reference_point.y;
-        break;
-      case CENTER_OF_LEFT_EDGE:
-        io.object_box_center.x = io.reference_point.x;
-        io.object_box_center.y = io.reference_point.y - half_box_y;
-        break;
-      case COG:
-      case BOX_CENTER:
-      case INVALID:
-        io.object_box_center.x = io.reference_point.x;
-        io.object_box_center.y = io.reference_point.y;
-        break;
+        case TOP_FRONT_LEFT_CORNER:
+          io.object_box_center.x = io.reference_point.x - half_box_x;
+          io.object_box_center.y = io.reference_point.y - half_box_y;
+          break;
+        case TOP_FRONT_RIGHT_CORNER:
+          io.object_box_center.x = io.reference_point.x - half_box_x;
+          io.object_box_center.y = io.reference_point.y + half_box_y;
+          break;
+        case BOTTOM_REAR_RIGHT_CORNER:
+          io.object_box_center.x = io.reference_point.x + half_box_x;
+          io.object_box_center.y = io.reference_point.y + half_box_y;
+          break;
+        case BOTTOM_REAR_LEFT_CORNER:
+          io.object_box_center.x = io.reference_point.x + half_box_x;
+          io.object_box_center.y = io.reference_point.y - half_box_y;
+          break;
+        case CENTER_OF_TOP_FRONT_EDGE:
+          io.object_box_center.x = io.reference_point.x - half_box_x;
+          io.object_box_center.y = io.reference_point.y;
+          break;
+        case CENTER_OF_RIGHT_EDGE:
+          io.object_box_center.x = io.reference_point.x;
+          io.object_box_center.y = io.reference_point.y + half_box_y;
+          break;
+        case CENTER_OF_BOTTOM_REAR_EDGE:
+          io.object_box_center.x = io.reference_point.x + half_box_x;
+          io.object_box_center.y = io.reference_point.y;
+          break;
+        case CENTER_OF_LEFT_EDGE:
+          io.object_box_center.x = io.reference_point.x;
+          io.object_box_center.y = io.reference_point.y - half_box_y;
+          break;
+        case COG:
+        case BOX_CENTER:
+        case INVALID:
+          io.object_box_center.x = io.reference_point.x;
+          io.object_box_center.y = io.reference_point.y;
+          break;
       }
 
-      io.absolute_velocity.x = o.tracked_properties.velocity.x / 100.0;  // In cm/s
-      io.absolute_velocity.y = o.tracked_properties.velocity.y / 100.0;  // In cm/s
-      io.absolute_velocity_sigma.x = o.tracked_properties.velocity_sigma.x / 100.0;  // In cm/s
-      io.absolute_velocity_sigma.y = o.tracked_properties.velocity_sigma.y / 100.0;  // In cm/s
-      io.relative_velocity.x = o.tracked_properties.relative_velocity.x / 100.0;  // In cm/s
-      io.relative_velocity.y = o.tracked_properties.relative_velocity.y / 100.0;  // In cm/s
-
+      io.absolute_velocity.x = o.tracked_properties.velocity.x / 100.0; // In cm/s
+      io.absolute_velocity.y = o.tracked_properties.velocity.y / 100.0; // In cm/s
+      io.absolute_velocity_sigma.x = o.tracked_properties.velocity_sigma.x / 100.0; // In cm/s
+      io.absolute_velocity_sigma.y = o.tracked_properties.velocity_sigma.y / 100.0; // In cm/s
+      io.relative_velocity.x = o.tracked_properties.relative_velocity.x / 100.0; // In cm/s
+      io.relative_velocity.y = o.tracked_properties.relative_velocity.y / 100.0; // In cm/s
+  
       io.classification = o.tracked_properties.classification;
       io.classification_age = o.tracked_properties.classification_age;
-    }
+    } 
 
     if (o.untracked_properties_available)
     {
       io.relative_timestamp = o.untracked_properties.relative_time_of_measurement;
 
-      io.closest_point.x = o.untracked_properties.position_closest_point.x / 100.0;  // In cm
-      io.closest_point.y = o.untracked_properties.position_closest_point.y / 100.0;  // In cm
+      io.closest_point.x = o.untracked_properties.position_closest_point.x / 100.0; // In cm
+      io.closest_point.y = o.untracked_properties.position_closest_point.y / 100.0; // In cm
 
-      io.object_box_size.size_x = o.untracked_properties.object_box_size.x / 100.0;  // In cm
-      io.object_box_size.size_y = o.untracked_properties.object_box_size.y / 100.0;  // In cm
-      io.object_box_orientation = o.untracked_properties.object_box_orientation /
-                                  100.0 * (M_PI / 180.0);  // In 1/100 of a degree
+      io.object_box_size.size_x = o.untracked_properties.object_box_size.x / 100.0; // In cm
+      io.object_box_size.size_y = o.untracked_properties.object_box_size.y / 100.0; // In cm
+      io.object_box_orientation = o.untracked_properties.object_box_orientation / 100.0 * (M_PI / 180.0); // In 1/100 of a degree
 
-      io.object_box_center.x = o.untracked_properties.tracking_point_coordinate.x / 100.0;  // In cm
-      io.object_box_center.y = o.untracked_properties.tracking_point_coordinate.y / 100.0;  // In cm
+      io.object_box_center.x = o.untracked_properties.tracking_point_coordinate.x / 100.0; // In cm
+      io.object_box_center.y = o.untracked_properties.tracking_point_coordinate.y / 100.0; // In cm
 
-      io.reference_point.x = o.untracked_properties.tracking_point_coordinate.x / 100.0;  // In cm
-      io.reference_point.y = o.untracked_properties.tracking_point_coordinate.y / 100.0;  // In cm
+      io.reference_point.x = o.untracked_properties.tracking_point_coordinate.x / 100.0; // In cm
+      io.reference_point.y = o.untracked_properties.tracking_point_coordinate.y / 100.0; // In cm
 
-      io.reference_point_sigma.x = o.untracked_properties.tracking_point_coordinate_sigma.x / 100.0;  // In cm
-      io.reference_point_sigma.y = o.untracked_properties.tracking_point_coordinate_sigma.y / 100.0;  // In cm
+      io.reference_point_sigma.x = o.untracked_properties.tracking_point_coordinate_sigma.x / 100.0; // In cm
+      io.reference_point_sigma.y = o.untracked_properties.tracking_point_coordinate_sigma.y / 100.0; // In cm
     }
 
     io.contour_point_list = get_contour_points();
@@ -1434,32 +1429,32 @@ void ObjectData2280::parse(uint8_t *in)
     Object2280 new_object;
     new_object.parse(&in[offset]);
 
-    if (
+    if( 
       fabs(new_object.object_box_center.x - 0.0) > 0.01 && fabs(new_object.object_box_center.y - 0.0) > 0.01 &&
-      fabs(new_object.object_box_center.x) < 300.0 && fabs(new_object.object_box_center.y) < 300.0 &&
-      new_object.object_age > 0)
+      fabs(new_object.object_box_center.x) < 300.0 && fabs(new_object.object_box_center.y) < 300.0 && 
+      new_object.object_age > 0 )
     {
       object_list.push_back(new_object);
     }
 
-    offset += i * 168;                                  // Add size of single object without contour points.
-    offset += new_object.number_of_contour_points * 8;  // Add size of just-parsed object's contour points.
+    offset += i * 168;                                  //Add size of single object without contour points.
+    offset += new_object.number_of_contour_points * 8;  //Add size of just-parsed object's contour points.
   }
 }
 
 std::vector<Point3D> ObjectData2280::get_contour_points()
 {
   std::vector<Point3D> contour_points;
-
-  for (Object2280 o : object_list)
+  
+  for( Object2280 o : object_list )
   {
-    for (Point2Df p2d : o.contour_point_list)
+    for( Point2Df p2d : o.contour_point_list )
     {
-      if (!std::isnan(p2d.x) && !std::isnan(p2d.y) && fabs(p2d.x) < 300.0 && fabs(p2d.y) < 300.0)
+      if( !std::isnan(p2d.x) && !std::isnan(p2d.y) && fabs(p2d.x) < 300.0 && fabs(p2d.y) < 300.0)
       {
         Point3D p3d;
-        p3d.x = static_cast<double>(p2d.x);
-        p3d.y = static_cast<double>(p2d.y);
+        p3d.x = (double) p2d.x;
+        p3d.y = (double) p2d.y;
         p3d.z = 0.0;
         contour_points.push_back(p3d);
       }
@@ -1473,20 +1468,20 @@ std::vector<IbeoObject> ObjectData2280::get_objects()
 {
   std::vector<IbeoObject> io_list;
 
-  for (Object2280 o : object_list)
+  for( Object2280 o : object_list )
   {
     IbeoObject io;
-    io.id = o.id;
-    io.age = o.object_age;
-    io.prediction_age = o.object_prediction_age;
-    io.classification = o.classification;
-    io.classification_age = o.classification_age;
+    io.id = o.id; 
+    io.age = o.object_age;                      
+    io.prediction_age = o.object_prediction_age;      
+    io.classification = o.classification;       
+    io.classification_age = o.classification_age;      
     io.classification_certainty = o.classification_certainty;
 
-    io.relative_timestamp = 0;
-    io.bounding_box_size.size_x = o.object_box_size.x;
-    io.bounding_box_size.size_y = o.object_box_size.y;
-    io.object_box_orientation = o.object_box_orientation_angle;
+    io.relative_timestamp = 0; 
+    io.bounding_box_size.size_x = o.object_box_size.x;      
+    io.bounding_box_size.size_y = o.object_box_size.y;      
+    io.object_box_orientation = o.object_box_orientation_angle;    
 
     io.object_box_center.x = o.object_box_center.x;
     io.object_box_center.y = o.object_box_center.y;
@@ -1648,7 +1643,7 @@ void CommandSetFilter::encode()
   struct timeval tv;
   struct tm *tm;
   gettimeofday(&tv, NULL);
-  tm = localtime(&tv.tv_sec);  // NOLINT
+  tm = localtime(&tv.tv_sec);
   ibeo_header.time = unix_time_to_ntp(tm, &tv);
   ibeo_header.encode();
 

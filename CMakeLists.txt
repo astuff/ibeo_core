@@ -5,6 +5,7 @@ add_compile_options(-std=c++11)
 
 find_package(catkin REQUIRED COMPONENTS
   network_interface
+  roslint
 )
 
 catkin_package(
@@ -53,3 +54,9 @@ install(DIRECTORY include/${PROJECT_NAME}/
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
+
+roslint_cpp(
+  include/${PROJECT_NAME}/ibeo_core.h
+  include/${PROJECT_NAME}/utils.h
+  src/ibeo_core.cpp
+)
