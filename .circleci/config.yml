@@ -63,7 +63,6 @@ jobs:
             apt-get update && apt-get install openssh-client python-catkin-tools build-essential -y
             source `find /opt/ros -name setup.bash | sort | head -1`
             rosdep install --from-paths . --ignore-src -y
-            git clone https://github.com/astuff/network_interface
             cd ..
             catkin init
             catkin config --extend /opt/ros/$ROS_DISTRO
