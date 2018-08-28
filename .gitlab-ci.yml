@@ -2,7 +2,7 @@ before_script:
   - apt-get update && apt-get install -y openssh-client python-catkin-tools build-essential
   - source `find /opt/ros -name setup.bash | sort | head -1` && echo $ROS_DISTRO
   - mkdir src && mv `find -maxdepth 1 -not -name . -not -name src` src/
-  - git clone --depth 1 https://github.com/astuff/network_interface src/network_interface
+  - git clone https://github.com/astuff/network_interface src/network_interface
   - rosdep update
   - rosdep install --from-paths src --ignore-src -y
   - catkin init
