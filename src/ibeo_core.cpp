@@ -410,8 +410,8 @@ void Object2280::parse(uint8_t *in)
   object_box_center.parse(&in[40], BE);
   object_box_center_sigma.parse(&in[48], BE);
   object_box_size.parse(&in[56], BE);
-  object_box_orientation_angle = read_le<float>(in, 4, 72);
-  object_box_orientation_angle_sigma = read_le<float>(in, 4, 76);
+  object_box_orientation_angle = read_be<float>(in, 4, 72);
+  object_box_orientation_angle_sigma = read_be<float>(in, 4, 76);
   relative_velocity.parse(&in[80], BE);
   relative_velocity_sigma.parse(&in[88], BE);
   absolute_velocity.parse(&in[96], BE);
