@@ -146,7 +146,10 @@ void UntrackedProperties::parse(uint8_t *in)
   tracking_point_coordinate_sigma.parse(&in[27], BE);
   number_of_contour_points = read_be<uint8_t>(in, 1, 34);
 
-  for (uint16_t i = 0; i < number_of_contour_points; i++)
+  if (number_of_contour_points == 255)
+    number_of_contour_points = 0;
+
+  for (uint8_t i = 0; i < number_of_contour_points; i++)
   {
     ContourPointSigma new_contour_point;
     new_contour_point.parse(&in[35 + i * 8], BE);
@@ -182,7 +185,10 @@ void TrackedProperties::parse(uint8_t *in)
   yaw_rate_sigma = read_be<uint16_t>(in, 2, 73);
   number_of_contour_points = read_be<uint8_t>(in, 1, 75);
 
-  for (uint16_t i = 0; i < number_of_contour_points; i++)
+  if (number_of_contour_points == 255)
+    number_of_contour_points = 0;
+
+  for (uint8_t i = 0; i < number_of_contour_points; i++)
   {
     ContourPointSigma new_contour_point;
     new_contour_point.parse(&in[76 + i * 8], BE);
@@ -287,6 +293,9 @@ void Object2221::parse(uint8_t *in)
   classification_certainty = read_le<uint16_t>(in, 2, 54);
   number_of_contour_points = read_le<uint16_t>(in, 2, 56);
 
+  if (number_of_contour_points == 65535)
+    number_of_contour_points = 0;
+
   for (uint16_t i = 0; i < number_of_contour_points; i++)
   {
     Point2Di contour_point;
@@ -317,7 +326,10 @@ void Object2225::parse(uint8_t *in)
   number_of_contour_points = read_be<uint8_t>(in, 1, 130);
   closest_point_index = read_be<uint8_t>(in, 1, 131);
 
-  for (uint16_t i = 0; i < number_of_contour_points; i++)
+  if (number_of_contour_points == 255)
+    number_of_contour_points = 0;
+
+  for (uint8_t i = 0; i < number_of_contour_points; i++)
   {
     Point2Df contour_point;
     contour_point.parse(&in[132 + i * 8], BE);
@@ -358,6 +370,9 @@ void Object2270::parse(uint8_t *in)
   classification_age = read_le<uint16_t>(in, 2, 70);
   classification_confidence = read_le<uint16_t>(in, 2, 72);
   number_of_contour_points = read_le<uint16_t>(in, 2, 74);
+
+  if (number_of_contour_points == 65535)
+    number_of_contour_points = 0;
 
   for (uint16_t i = 0; i < number_of_contour_points; i++)
   {
@@ -425,7 +440,10 @@ void Object2280::parse(uint8_t *in)
   object_priority = read_be<uint16_t>(in, 2, 162);
   object_existence_measurement = read_be<float>(in, 4, 164);
 
-  for (uint16_t i = 0; i < number_of_contour_points; i++)
+  if (number_of_contour_points == 255)
+    number_of_contour_points = 0;
+
+  for (uint8_t i = 0; i < number_of_contour_points; i++)
   {
     Point2Df new_contour_point;
     new_contour_point.parse(&in[168 + i * 8], BE);
