@@ -2,8 +2,8 @@
 Changelog for package ibeo_core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.1 (2018-11-19)
+------------------
 * Merge pull request `#7 <https://github.com/astuff/ibeo_core/issues/7>`_ from astuff/maint/add_urls
   Adding URL to package.xml and updating README.
 * Merge pull request `#6 <https://github.com/astuff/ibeo_core/issues/6>`_ from astuff/fix/bad_alloc
