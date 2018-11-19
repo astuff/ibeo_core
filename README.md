@@ -8,3 +8,5 @@ This implements core functions for the following devices:
 - Ibeo LUX Fusion
 - Ibeo Scala
 - Ibeo Scala Fusion
+
+For more information, see the [ROS wiki](http://wiki.ros.org/ibeo_core).
