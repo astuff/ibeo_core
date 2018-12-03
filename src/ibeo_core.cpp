@@ -1452,15 +1452,9 @@ void ObjectData2280::parse(uint8_t *in)
     Object2280 new_object;
     new_object.parse(&in[offset]);
 
-    if (
-      fabs(new_object.object_box_center.x - 0.0) > 0.01 && fabs(new_object.object_box_center.y - 0.0) > 0.01 &&
-      fabs(new_object.object_box_center.x) < 300.0 && fabs(new_object.object_box_center.y) < 300.0 &&
-      new_object.object_age > 0)
-    {
-      object_list.push_back(new_object);
-    }
+    object_list.push_back(new_object);
 
-    offset += i * 168;                                  // Add size of single object without contour points.
+    offset += 168;                                      // Add size of single object without contour points.
     offset += new_object.number_of_contour_points * 8;  // Add size of just-parsed object's contour points.
   }
 }
