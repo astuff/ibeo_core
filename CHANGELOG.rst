@@ -2,8 +2,8 @@
 Changelog for package ibeo_core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.2 (2018-12-07)
+------------------
 * Merge pull request `#8 <https://github.com/astuff/ibeo_core/issues/8>`_ from ShepelIlya/master
 * Deleted redunant conditions & fixed offset in ObjectData2280. It works!
 * Contributors: Rinda Gunjala, Шепель Илья Олегович
