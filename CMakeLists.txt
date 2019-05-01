@@ -49,14 +49,12 @@ install(DIRECTORY include/${PROJECT_NAME}/
 ## Testing ##
 #############
 
-## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_ibeo_core.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-# endif()
-
 roslint_cpp(
   include/${PROJECT_NAME}/ibeo_core.h
   include/${PROJECT_NAME}/utils.h
   src/ibeo_core.cpp
 )
+
+if(CATKIN_ENABLE_TESTING)
+  roslint_add_test()
+endif()
