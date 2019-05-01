@@ -10,6 +10,7 @@ jobs:
           command: |
             apt-get update -qq
             source `find /opt/ros -name setup.bash | sort | head -1`
+            git clone https://github.com/astuff/network_interface -b maint/cpp_11_cleanup
             rosdep install --from-paths . --ignore-src -y
             cd ..
             catkin init
@@ -32,38 +33,6 @@ jobs:
             catkin_test_results
     working_directory: ~/src
 
-  lunar:
-    docker:
-      - image: autonomoustuff/docker-builds:lunar-ros-base
-    steps:
-      - checkout
-      - run:
-          name: Set Up Container
-          command: |
-            apt-get update -qq
-            source `find /opt/ros -name setup.bash | sort | head -1`
-            rosdep install --from-paths . --ignore-src -y
-            cd ..
-            catkin init
-            catkin config --extend /opt/ros/$ROS_DISTRO
-      - run:
-          name: Build
-          command: |
-            cd ..
-            catkin build
-      - run:
-          name: Lint
-          command: |
-            catkin bt --no-deps --make-args roslint
-      - run:
-          name: Run Tests
-          command: |
-            source /opt/ros/lunar/setup.bash
-            cd ..
-            catkin run_tests
-            catkin_test_results
-    working_directory: ~/src
-
   melodic:
     docker:
       - image: autonomoustuff/docker-builds:melodic-ros-base
@@ -74,6 +43,7 @@ jobs:
           command: |
             apt-get update -qq
             source `find /opt/ros -name setup.bash | sort | head -1`
+            git clone https://github.com/astuff/network_interface -b maint/cpp_11_cleanup
             rosdep install --from-paths . --ignore-src -y
             cd ..
             catkin init
@@ -101,5 +71,4 @@ workflows:
   ros_build:
     jobs:
       - kinetic
-      - lunar
       - melodic
