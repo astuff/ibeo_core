@@ -10,6 +10,7 @@ jobs:
           command: |
             apt-get update -qq
             source `find /opt/ros -name setup.bash | sort | head -1`
+            mkdir ibeo_core && mv `find -maxdepth 1 -not -name . -not -name ibeo_core` ibeo_core/
             git clone https://github.com/astuff/network_interface -b maint/cpp_11_cleanup
             rosdep install --from-paths . --ignore-src -y
             cd ..
@@ -43,6 +44,7 @@ jobs:
           command: |
             apt-get update -qq
             source `find /opt/ros -name setup.bash | sort | head -1`
+            mkdir ibeo_core && mv `find -maxdepth 1 -not -name . -not -name ibeo_core` ibeo_core/
             git clone https://github.com/astuff/network_interface -b maint/cpp_11_cleanup
             rosdep install --from-paths . --ignore-src -y
             cd ..
