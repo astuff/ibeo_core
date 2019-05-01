@@ -28,19 +28,17 @@ const size_t MAGIC_WORD = 0xAFFEC0C2;
 typedef uint64_t NTPTime;
 
 template<typename T>
-void parse_tuple(uint8_t *in, T *out1, T *out2, ByteOrder bo)
+void parse_tuple(const std::vector<uint8_t>& in, T *out1, T *out2, ByteOrder bo)
 {
-  size_t bytes = sizeof(T);
-
-  if (bo == LE)
+  if (bo == ByteOrder::LE)
   {
-    *out1 = read_le<T>(in, bytes, 0);
-    *out2 = read_le<T>(in, bytes, bytes);
+    *out1 = read_le<T>(in, 0);
+    *out2 = read_le<T>(in, sizeof(T));
   }
-  else if (bo == BE)
+  else if (bo == ByteOrder::BE)
   {
-    *out1 = read_be<T>(in, bytes, 0);
-    *out2 = read_be<T>(in, bytes, bytes);
+    *out1 = read_be<T>(in, 0);
+    *out2 = read_be<T>(in, sizeof(T));
   }
 };
 
