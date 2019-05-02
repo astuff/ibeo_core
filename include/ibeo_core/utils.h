@@ -1,9 +1,9 @@
 /*
- * MIT License
- *
- * Copyright (c) 2018 AutonomouStuff, LLC
- *
- */
+* Unpublished Copyright (c) 2009-2019 AutonomouStuff, LLC, All Rights Reserved.
+*
+* This file is part of the ibeo_core ROS driver which is released under the MIT license.
+* See file LICENSE included with this software or go to https://opensource.org/licenses/MIT for full license details.
+*/
 
 #ifndef IBEO_CORE_UTILS_H
 #define IBEO_CORE_UTILS_H
