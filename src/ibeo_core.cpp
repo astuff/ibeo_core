@@ -57,8 +57,8 @@ void ContourPointSigma::parse(
   const uint16_t& offset,
   ByteOrder bo)
 {
-  parse_tuple<int16_t>(in, &x, &y, bo);
-  parse_tuple<uint8_t>(in, &x_sigma, &y_sigma, bo);
+  parse_tuple<int16_t>(in, &x, &y, bo, offset);
+  parse_tuple<uint8_t>(in, &x_sigma, &y_sigma, bo, offset);
 }
 
 void Point2Df::parse(
@@ -66,7 +66,7 @@ void Point2Df::parse(
   const uint16_t& offset,
   ByteOrder bo)
 {
-  parse_tuple<float>(in, &x, &y, bo);
+  parse_tuple<float>(in, &x, &y, bo, offset);
 }
 
 void Point2Di::parse(
@@ -74,7 +74,7 @@ void Point2Di::parse(
   const uint16_t& offset,
   ByteOrder bo)
 {
-  parse_tuple<int16_t>(in, &x, &y, bo);
+  parse_tuple<int16_t>(in, &x, &y, bo, offset);
 }
 
 void Point2Dui::parse(
@@ -82,7 +82,7 @@ void Point2Dui::parse(
   const uint16_t& offset,
   ByteOrder bo)
 {
-  parse_tuple<uint16_t>(in, &x, &y, bo);
+  parse_tuple<uint16_t>(in, &x, &y, bo, offset);
 }
 
 void Sigma2D::parse(
@@ -90,7 +90,7 @@ void Sigma2D::parse(
   const uint16_t& offset,
   ByteOrder bo)
 {
-  parse_tuple<uint16_t>(in, &sigma_x, &sigma_y, bo);
+  parse_tuple<uint16_t>(in, &sigma_x, &sigma_y, bo, offset);
 }
 
 void Size2D::parse(
@@ -98,7 +98,7 @@ void Size2D::parse(
   const uint16_t& offset,
   ByteOrder bo)
 {
-  parse_tuple<uint16_t>(in, &size_x, &size_y, bo);
+  parse_tuple<uint16_t>(in, &size_x, &size_y, bo, offset);
 }
 
 void Velocity2D::parse(
@@ -106,7 +106,7 @@ void Velocity2D::parse(
   const uint16_t& offset,
   ByteOrder bo)
 {
-  parse_tuple<int16_t>(in, &velocity_x, &velocity_y, bo);
+  parse_tuple<int16_t>(in, &velocity_x, &velocity_y, bo, offset);
 }
 
 void ResolutionInfo::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
