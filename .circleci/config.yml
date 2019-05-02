@@ -26,7 +26,7 @@ jobs:
           command: |
             source /opt/ros/kinetic/setup.bash
             cd ..
-            catkin run_tests --no-deps
+            catkin run_tests ibeo_core --no-deps
             catkin_test_results
     working_directory: ~/src
 
@@ -56,7 +56,7 @@ jobs:
           command: |
             source /opt/ros/melodic/setup.bash
             cd ..
-            catkin run_tests --no-deps
+            catkin run_tests ibeo_core --no-deps
             catkin_test_results
     working_directory: ~/src
 
