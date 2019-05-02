@@ -14,10 +14,6 @@
 #include <ctime>
 #include <vector>
 
-#include <network_interface/network_utils.h>
-
-using namespace AS::Network;  // NOLINT
-
 namespace AS
 {
 namespace Drivers
@@ -26,21 +22,6 @@ namespace Ibeo
 {
 const size_t MAGIC_WORD = 0xAFFEC0C2;
 typedef uint64_t NTPTime;
-
-template<typename T>
-void parse_tuple(const std::vector<uint8_t>& in, T *out1, T *out2, ByteOrder bo)
-{
-  if (bo == ByteOrder::LE)
-  {
-    *out1 = read_le<T>(in, 0);
-    *out2 = read_le<T>(in, sizeof(T));
-  }
-  else if (bo == ByteOrder::BE)
-  {
-    *out1 = read_be<T>(in, 0);
-    *out2 = read_be<T>(in, sizeof(T));
-  }
-};
 
 inline NTPTime unix_time_to_ntp(struct tm *tm, struct timeval *tv)
 {

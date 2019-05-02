@@ -20,6 +20,7 @@
 
 #include <vector>
 #include <ibeo_core/ibeo_core.h>
+#include <network_interface/network_utils.h>
 
 using namespace AS::Network;  // NOLINT
 using namespace AS::Drivers::Ibeo;  // NOLINT

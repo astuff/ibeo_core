@@ -16,8 +16,10 @@
 
 #include <sys/time.h>
 
-#include <network_interface/network_utils.h>
 #include <ibeo_core/utils.h>
+#include <network_interface/common.h>
+
+using AS::Network::ByteOrder;
 
 namespace AS
 {
