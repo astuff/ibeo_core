@@ -1496,12 +1496,16 @@ std::vector<IbeoObject> ObjectData2280::get_objects()
     io.classification_certainty = o.classification_certainty;
 
     io.relative_timestamp = 0;
+    io.bounding_box_center.x = o.object_box_center.x;
+    io.bounding_box_center.y = o.object_box_center.y;
     io.bounding_box_size.size_x = o.object_box_size.x;
     io.bounding_box_size.size_y = o.object_box_size.y;
-    io.object_box_orientation = o.object_box_orientation_angle;
 
     io.object_box_center.x = o.object_box_center.x;
     io.object_box_center.y = o.object_box_center.y;
+    io.object_box_size.size_x = o.object_box_size.x;
+    io.object_box_size.size_y = o.object_box_size.y;
+    io.object_box_orientation = o.object_box_orientation_angle;
 
     io.absolute_velocity.x = o.absolute_velocity.x;
     io.absolute_velocity.y = o.absolute_velocity.y;
