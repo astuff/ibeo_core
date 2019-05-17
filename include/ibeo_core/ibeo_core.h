@@ -1,9 +1,9 @@
 /*
- * MIT License
- *
- * Copyright (c) 2018 AutonomouStuff, LLC
- *
- */
+* Unpublished Copyright (c) 2009-2019 AutonomouStuff, LLC, All Rights Reserved.
+*
+* This file is part of the ibeo_core ROS driver which is released under the MIT license.
+* See file LICENSE included with this software or go to https://opensource.org/licenses/MIT for full license details.
+*/
 
 #ifndef IBEO_CORE_IBEO_CORE_H
 #define IBEO_CORE_IBEO_CORE_H
@@ -16,8 +16,10 @@
 
 #include <sys/time.h>
 
-#include <network_interface/network_utils.h>
 #include <ibeo_core/utils.h>
+#include <network_interface/common.h>
+
+using AS::Network::ByteOrder;
 
 namespace AS
 {
@@ -123,7 +125,9 @@ public:
   float y_position;
   float z_position;
 
-  void parse(uint8_t *in);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset);
 };
 
 class Point2Df  // LUX: Float2D and Point2D
@@ -132,7 +136,10 @@ public:
   float x;
   float y;
 
-  void parse(uint8_t *in, ByteOrder bo);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset,
+    ByteOrder bo);
 };
 
 class Point2Di
@@ -141,7 +148,10 @@ public:
   int16_t x;
   int16_t y;
 
-  void parse(uint8_t *in, ByteOrder bo);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset,
+    ByteOrder bo);
 };
 
 class Point2Dui
@@ -150,7 +160,10 @@ public:
   uint16_t x;
   uint16_t y;
 
-  void parse(uint8_t *in, ByteOrder bo);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset,
+    ByteOrder bo);
 };
 
 class Sigma2D
@@ -159,7 +172,10 @@ public:
   uint16_t sigma_x;
   uint16_t sigma_y;
 
-  void parse(uint8_t *in, ByteOrder bo);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset,
+    ByteOrder bo);
 };
 
 class Size2D
@@ -168,7 +184,10 @@ public:
   uint16_t size_x;
   uint16_t size_y;
 
-  void parse(uint8_t *in, ByteOrder bo);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset,
+    ByteOrder bo);
 };
 
 class Size2Df
@@ -184,7 +203,10 @@ public:
   int16_t velocity_x;
   int16_t velocity_y;
 
-  void parse(uint8_t *in, ByteOrder bo);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset,
+    ByteOrder bo);
 };
 
 class ContourPointSigma : public Point2Di
@@ -193,7 +215,10 @@ public:
   uint8_t x_sigma;
   uint8_t y_sigma;
 
-  void parse(uint8_t *in, ByteOrder bo);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset,
+    ByteOrder bo);
 };
 
 class ResolutionInfo  // LUX: Resolution
@@ -202,7 +227,9 @@ public:
   float resolution_start_angle;
   float resolution;
 
-  void parse(uint8_t *in);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset);
 };
 
 class ScannerInfo2204
@@ -220,7 +247,9 @@ public:
   float offset_y;
   float offset_z;
 
-  void parse(uint8_t *in);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset);
 };
 
 class ScannerInfo2205
@@ -241,7 +270,9 @@ public:
   MountingPositionF mounting_position;
   ResolutionInfo resolutions[8];
 
-  void parse(uint8_t *in);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset);
 };
 
 class UntrackedProperties
@@ -258,7 +289,9 @@ public:
   uint8_t number_of_contour_points;
   std::vector<ContourPointSigma> contour_point_list;
 
-  void parse(uint8_t *in);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset);
 };
 
 class TrackedProperties
@@ -290,7 +323,9 @@ public:
   uint8_t number_of_contour_points;
   std::vector<ContourPointSigma> contour_point_list;
 
-  void parse(uint8_t *in);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset);
 };
 
 class ScanPoint2202
@@ -306,7 +341,9 @@ public:
   uint16_t radial_distance;
   uint16_t echo_pulse_width;
 
-  void parse(uint8_t *in);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset);
 };
 
 class ScanPoint2204
@@ -324,7 +361,9 @@ public:
   bool dirt;
   bool precipitation;
 
-  void parse(uint8_t *in);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset);
 };
 
 class ScanPoint2205
@@ -343,7 +382,9 @@ public:
   bool precipitation;
   bool transparent;
 
-  void parse(uint8_t *in);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset);
 };
 
 class ScanPoint2208
@@ -359,7 +400,9 @@ public:
   uint16_t radial_distance;
   uint16_t echo_pulse_width;
 
-  void parse(uint8_t *in);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset);
 };
 
 struct IbeoObject
@@ -413,7 +456,9 @@ public:
   uint16_t number_of_contour_points;
   std::vector<Point2Di> contour_point_list;
 
-  void parse(uint8_t *in);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset);
 };
 
 class Object2225
@@ -440,7 +485,9 @@ public:
   uint8_t closest_point_index;
   std::vector<Point2Df> contour_point_list;
 
-  void parse(uint8_t *in);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset);
 };
 
 class Object2270
@@ -478,7 +525,9 @@ public:
   uint16_t number_of_contour_points;
   std::vector<Point2Di> contour_point_list;
 
-  void parse(uint8_t *in);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset);
 };
 
 class Object2271
@@ -490,7 +539,9 @@ public:
   UntrackedProperties untracked_properties;
   TrackedProperties tracked_properties;
 
-  void parse(uint8_t *in);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset);
 };
 
 class Object2280
@@ -525,7 +576,9 @@ public:
   float object_existence_measurement;
   std::vector<Point2Df> contour_point_list;
 
-  void parse(uint8_t *in);
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset);
 };
 
 class IbeoDataHeader  // LUX: LuxHeader_TX_Message
@@ -539,7 +592,7 @@ public:
 
   std::vector<uint8_t> encoded_data;
 
-  void parse(uint8_t *in);
+  void parse(const std::vector<uint8_t>& in);
   void encode();
 };
 
@@ -557,7 +610,7 @@ public:
   IbeoTxMessage(bool scan_points, bool contour_points, bool objects);
 
   static std::shared_ptr<IbeoTxMessage> make_message(const uint16_t& data_type);
-  virtual void parse(uint8_t *in) = 0;
+  virtual void parse(const std::vector<uint8_t>& in) = 0;
   virtual std::vector<Point3DL> get_scan_points();
   virtual std::vector<Point3D> get_contour_points();
   virtual std::vector<IbeoObject> get_objects();
@@ -606,7 +659,7 @@ public:
   bool wrn_incorrect_mounting_params;
   bool wrn_no_obj_comp_due_to_scan_freq;
 
-  void parse(uint8_t *in);
+  void parse(const std::vector<uint8_t>& in);
 };
 
 class ScanData2202 : public IbeoTxMessage  // LUX: LuxScandata_TX_Message
@@ -637,7 +690,7 @@ public:
 
   ScanData2202();
 
-  void parse(uint8_t *in);
+  void parse(const std::vector<uint8_t>& in);
   std::vector<Point3DL> get_scan_points();
 };
 
@@ -662,7 +715,7 @@ public:
 
   ScanData2204();
 
-  void parse(uint8_t *in);
+  void parse(const std::vector<uint8_t>& in);
   std::vector<Point3DL> get_scan_points();
 };
 
@@ -684,7 +737,7 @@ public:
 
   ScanData2205();
 
-  void parse(uint8_t *in);
+  void parse(const std::vector<uint8_t>& in);
   std::vector<Point3DL> get_scan_points();
 };
 
@@ -720,7 +773,7 @@ public:
 
   ScanData2208();
 
-  void parse(uint8_t *in);
+  void parse(const std::vector<uint8_t>& in);
   std::vector<Point3DL> get_scan_points();
 };
 
@@ -735,7 +788,7 @@ public:
 
   ObjectData2221();
 
-  void parse(uint8_t *in);
+  void parse(const std::vector<uint8_t>& in);
   std::vector<Point3D> get_contour_points();
   std::vector<IbeoObject> get_objects();
 };
@@ -751,7 +804,7 @@ public:
 
   ObjectData2225();
 
-  void parse(uint8_t *in);
+  void parse(const std::vector<uint8_t>& in);
   std::vector<Point3D> get_contour_points();
   std::vector<IbeoObject> get_objects();
 };
@@ -768,7 +821,7 @@ public:
 
   ObjectData2270();
 
-  void parse(uint8_t *in);
+  void parse(const std::vector<uint8_t>& in);
   std::vector<Point3D> get_contour_points();
   std::vector<IbeoObject> get_objects();
 };
@@ -785,7 +838,7 @@ public:
 
   ObjectData2271();
 
-  void parse(uint8_t *in);
+  void parse(const std::vector<uint8_t>& in);
   std::vector<Point3D> get_contour_points();
   std::vector<IbeoObject> get_objects();
 };
@@ -801,7 +854,7 @@ public:
 
   ObjectData2280();
 
-  void parse(uint8_t *in);
+  void parse(const std::vector<uint8_t>& in);
   std::vector<Point3D> get_contour_points();
   std::vector<IbeoObject> get_objects();
 };
@@ -825,7 +878,7 @@ public:
 
   CameraImage();
 
-  void parse(uint8_t *in);
+  void parse(const std::vector<uint8_t>& in);
 };
 
 class HostVehicleState2805 : public IbeoTxMessage
@@ -850,7 +903,7 @@ public:
 
   HostVehicleState2805();
 
-  void parse(uint8_t *in);
+  void parse(const std::vector<uint8_t>& in);
 };
 
 class HostVehicleState2806 : public IbeoTxMessage
@@ -878,7 +931,7 @@ public:
 
   HostVehicleState2806();
 
-  void parse(uint8_t *in);
+  void parse(const std::vector<uint8_t>& in);
 };
 
 class HostVehicleState2807 : public HostVehicleState2806
@@ -907,7 +960,7 @@ public:
 
   HostVehicleState2807();
 
-  void parse(uint8_t *in);
+  void parse(const std::vector<uint8_t>& in);
 };
 
 class DeviceStatus : public IbeoTxMessage
@@ -921,7 +974,7 @@ public:
 
   DeviceStatus();
 
-  void parse(uint8_t *in);
+  void parse(const std::vector<uint8_t>& in);
 };
 
 class CommandSetFilter

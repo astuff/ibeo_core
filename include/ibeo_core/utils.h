@@ -1,9 +1,9 @@
 /*
- * MIT License
- *
- * Copyright (c) 2018 AutonomouStuff, LLC
- *
- */
+* Unpublished Copyright (c) 2009-2019 AutonomouStuff, LLC, All Rights Reserved.
+*
+* This file is part of the ibeo_core ROS driver which is released under the MIT license.
+* See file LICENSE included with this software or go to https://opensource.org/licenses/MIT for full license details.
+*/
 
 #ifndef IBEO_CORE_UTILS_H
 #define IBEO_CORE_UTILS_H
@@ -14,10 +14,6 @@
 #include <ctime>
 #include <vector>
 
-#include <network_interface/network_utils.h>
-
-using namespace AS::Network;  // NOLINT
-
 namespace AS
 {
 namespace Drivers
@@ -26,23 +22,6 @@ namespace Ibeo
 {
 const size_t MAGIC_WORD = 0xAFFEC0C2;
 typedef uint64_t NTPTime;
-
-template<typename T>
-void parse_tuple(uint8_t *in, T *out1, T *out2, ByteOrder bo)
-{
-  size_t bytes = sizeof(T);
-
-  if (bo == LE)
-  {
-    *out1 = read_le<T>(in, bytes, 0);
-    *out2 = read_le<T>(in, bytes, bytes);
-  }
-  else if (bo == BE)
-  {
-    *out1 = read_be<T>(in, bytes, 0);
-    *out2 = read_be<T>(in, bytes, bytes);
-  }
-};
 
 inline NTPTime unix_time_to_ntp(struct tm *tm, struct timeval *tv)
 {

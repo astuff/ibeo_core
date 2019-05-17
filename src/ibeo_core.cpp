@@ -20,6 +20,7 @@
 
 #include <vector>
 #include <ibeo_core/ibeo_core.h>
+#include <network_interface/network_utils.h>
 
 using namespace AS::Network;  // NOLINT
 using namespace AS::Drivers::Ibeo;  // NOLINT
@@ -41,110 +42,131 @@ const int32_t AS::Drivers::Ibeo::HostVehicleState2807::DATA_TYPE = 0x2807;
 const int32_t AS::Drivers::Ibeo::DeviceStatus::DATA_TYPE = 0x6301;
 
 // Primitive parsing functions
-void MountingPositionF::parse(uint8_t *in)
+void MountingPositionF::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
 {
-  yaw_angle = read_be<float>(in, 4, 0);
-  pitch_angle = read_be<float>(in, 4, 4);
-  roll_angle = read_be<float>(in, 4, 8);
-  x_position = read_be<float>(in, 4, 12);
-  y_position = read_be<float>(in, 4, 16);
-  z_position = read_be<float>(in, 4, 20);
+  yaw_angle = read_be<float>(in, offset);
+  pitch_angle = read_be<float>(in, offset + 4);
+  roll_angle = read_be<float>(in, offset + 8);
+  x_position = read_be<float>(in, offset + 12);
+  y_position = read_be<float>(in, offset + 16);
+  z_position = read_be<float>(in, offset + 20);
 }
 
-void ContourPointSigma::parse(uint8_t *in, ByteOrder bo)
+void ContourPointSigma::parse(
+  const std::vector<uint8_t>& in,
+  const uint16_t& offset,
+  ByteOrder bo)
 {
-  parse_tuple<int16_t>(in, &x, &y, bo);
-  parse_tuple<uint8_t>(in, &x_sigma, &y_sigma, bo);
+  parse_tuple<int16_t>(in, &x, &y, bo, offset);
+  parse_tuple<uint8_t>(in, &x_sigma, &y_sigma, bo, offset);
 }
 
-void Point2Df::parse(uint8_t *in, ByteOrder bo)
+void Point2Df::parse(
+  const std::vector<uint8_t>& in,
+  const uint16_t& offset,
+  ByteOrder bo)
 {
-  parse_tuple<float>(in, &x, &y, bo);
+  parse_tuple<float>(in, &x, &y, bo, offset);
 }
 
-void Point2Di::parse(uint8_t *in, ByteOrder bo)
+void Point2Di::parse(
+  const std::vector<uint8_t>& in,
+  const uint16_t& offset,
+  ByteOrder bo)
 {
-  parse_tuple<int16_t>(in, &x, &y, bo);
+  parse_tuple<int16_t>(in, &x, &y, bo, offset);
 }
 
-void Point2Dui::parse(uint8_t *in, ByteOrder bo)
+void Point2Dui::parse(
+  const std::vector<uint8_t>& in,
+  const uint16_t& offset,
+  ByteOrder bo)
 {
-  parse_tuple<uint16_t>(in, &x, &y, bo);
+  parse_tuple<uint16_t>(in, &x, &y, bo, offset);
 }
 
-void Sigma2D::parse(uint8_t *in, ByteOrder bo)
+void Sigma2D::parse(
+  const std::vector<uint8_t>& in,
+  const uint16_t& offset,
+  ByteOrder bo)
 {
-  parse_tuple<uint16_t>(in, &sigma_x, &sigma_y, bo);
+  parse_tuple<uint16_t>(in, &sigma_x, &sigma_y, bo, offset);
 }
 
-void Size2D::parse(uint8_t *in, ByteOrder bo)
+void Size2D::parse(
+  const std::vector<uint8_t>& in,
+  const uint16_t& offset,
+  ByteOrder bo)
 {
-  parse_tuple<uint16_t>(in, &size_x, &size_y, bo);
+  parse_tuple<uint16_t>(in, &size_x, &size_y, bo, offset);
 }
 
-void Velocity2D::parse(uint8_t *in, ByteOrder bo)
+void Velocity2D::parse(
+  const std::vector<uint8_t>& in,
+  const uint16_t& offset,
+  ByteOrder bo)
 {
-  parse_tuple<int16_t>(in, &velocity_x, &velocity_y, bo);
+  parse_tuple<int16_t>(in, &velocity_x, &velocity_y, bo, offset);
 }
 
-void ResolutionInfo::parse(uint8_t *in)
+void ResolutionInfo::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
 {
-  resolution_start_angle = read_be<float>(in, 4, 0);
-  resolution = read_be<float>(in, 4, 4);
+  resolution_start_angle = read_be<float>(in, offset);
+  resolution = read_be<float>(in, offset + 4);
 }
 
-void ScannerInfo2204::parse(uint8_t *in)
+void ScannerInfo2204::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
 {
-  device_id = read_be<uint8_t>(in, 1, 0);
-  scanner_type = read_be<uint8_t>(in, 1, 1);
-  scan_number = read_be<uint16_t>(in, 2, 2);
-  start_angle = read_be<float>(in, 4, 8);
-  end_angle = read_be<float>(in, 4, 12);
-  yaw_angle = read_be<float>(in, 4, 16);
-  pitch_angle = read_be<float>(in, 4, 20);
-  roll_angle = read_be<float>(in, 4, 24);
-  offset_x = read_be<float>(in, 4, 28);
-  offset_y = read_be<float>(in, 4, 32);
-  offset_z = read_be<float>(in, 4, 36);
+  device_id = read_be<uint8_t>(in, offset);
+  scanner_type = read_be<uint8_t>(in, offset + 1);
+  scan_number = read_be<uint16_t>(in, offset + 2);
+  start_angle = read_be<float>(in, offset + 8);
+  end_angle = read_be<float>(in, offset + 12);
+  yaw_angle = read_be<float>(in, offset + 16);
+  pitch_angle = read_be<float>(in, offset + 20);
+  roll_angle = read_be<float>(in, offset + 24);
+  offset_x = read_be<float>(in, offset + 28);
+  offset_y = read_be<float>(in, offset + 32);
+  offset_z = read_be<float>(in, offset + 36);
 }
 
-void ScannerInfo2205::parse(uint8_t *in)
+void ScannerInfo2205::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
 {
-  device_id = read_be<uint8_t>(in, 1, 0);
-  scanner_type = read_be<uint8_t>(in, 1, 1);
-  scan_number = read_be<uint16_t>(in, 2, 2);
-  start_angle = read_be<float>(in, 4, 8);
-  end_angle = read_be<float>(in, 4, 12);
-  scan_start_time = read_be<NTPTime>(in, 8, 16);
-  scan_end_time = read_be<NTPTime>(in, 8, 24);
-  scan_start_time_from_device = read_be<NTPTime>(in, 8, 32);
-  scan_end_time_from_device = read_be<NTPTime>(in, 8, 40);
-  scan_frequency = read_be<float>(in, 4, 48);
-  beam_tilt = read_be<float>(in, 4, 52);
-  scan_flags = read_be<float>(in, 4, 56);
-  mounting_position.parse(&in[60]);
-  resolutions[0].parse(&in[84]);
-  resolutions[1].parse(&in[92]);
-  resolutions[2].parse(&in[100]);
-  resolutions[3].parse(&in[108]);
-  resolutions[4].parse(&in[116]);
-  resolutions[5].parse(&in[124]);
-  resolutions[6].parse(&in[132]);
-  resolutions[7].parse(&in[140]);
+  device_id = read_be<uint8_t>(in, offset);
+  scanner_type = read_be<uint8_t>(in, offset + 1);
+  scan_number = read_be<uint16_t>(in, offset + 2);
+  start_angle = read_be<float>(in, offset + 8);
+  end_angle = read_be<float>(in, offset + 12);
+  scan_start_time = read_be<NTPTime>(in, offset + 16);
+  scan_end_time = read_be<NTPTime>(in, offset + 24);
+  scan_start_time_from_device = read_be<NTPTime>(in, offset + 32);
+  scan_end_time_from_device = read_be<NTPTime>(in, offset + 40);
+  scan_frequency = read_be<float>(in, offset + 48);
+  beam_tilt = read_be<float>(in, offset + 52);
+  scan_flags = read_be<float>(in, offset + 56);
+  mounting_position.parse(in, offset + 60);
+  resolutions[0].parse(in, offset + 84);
+  resolutions[1].parse(in, offset + 92);
+  resolutions[2].parse(in, offset + 100);
+  resolutions[3].parse(in, offset + 108);
+  resolutions[4].parse(in, offset + 116);
+  resolutions[5].parse(in, offset + 124);
+  resolutions[6].parse(in, offset + 132);
+  resolutions[7].parse(in, offset + 140);
 }
 
 // Object parsing functions
-void UntrackedProperties::parse(uint8_t *in)
+void UntrackedProperties::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
 {
-  relative_time_of_measurement = read_be<uint16_t>(in, 2, 1);
-  position_closest_point.parse(&in[3], BE);
-  object_box_size.parse(&in[9], BE);
-  object_box_size_sigma.parse(&in[13], BE);
-  object_box_orientation = read_be<int16_t>(in, 2, 17);
-  object_box_orientation_sigma = read_be<uint16_t>(in, 2, 19);
-  tracking_point_coordinate.parse(&in[23], BE);
-  tracking_point_coordinate_sigma.parse(&in[27], BE);
-  number_of_contour_points = read_be<uint8_t>(in, 1, 34);
+  relative_time_of_measurement = read_be<uint16_t>(in, offset + 1);
+  position_closest_point.parse(in, offset + 3, ByteOrder::BE);
+  object_box_size.parse(in, offset + 9, ByteOrder::BE);
+  object_box_size_sigma.parse(in, offset + 13, ByteOrder::BE);
+  object_box_orientation = read_be<int16_t>(in, offset + 17);
+  object_box_orientation_sigma = read_be<uint16_t>(in, offset + 19);
+  tracking_point_coordinate.parse(in, offset + 23, ByteOrder::BE);
+  tracking_point_coordinate_sigma.parse(in, offset + 27, ByteOrder::BE);
+  number_of_contour_points = read_be<uint8_t>(in, offset + 34);
 
   if (number_of_contour_points == 255)
     number_of_contour_points = 0;
@@ -152,38 +174,38 @@ void UntrackedProperties::parse(uint8_t *in)
   for (uint8_t i = 0; i < number_of_contour_points; i++)
   {
     ContourPointSigma new_contour_point;
-    new_contour_point.parse(&in[35 + i * 8], BE);
+    new_contour_point.parse(in, offset + 35 + (i * 8), ByteOrder::BE);
     contour_point_list.push_back(new_contour_point);
   }
 }
 
-void TrackedProperties::parse(uint8_t *in)
+void TrackedProperties::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
 {
-  object_age = read_be<uint16_t>(in, 2, 1);
-  hidden_status_age = read_be<uint16_t>(in, 2, 3);
-  uint8_t dynamic_flags = read_be<uint8_t>(in, 1, 5);
+  object_age = read_be<uint16_t>(in, offset + 1);
+  hidden_status_age = read_be<uint16_t>(in, offset + 3);
+  uint8_t dynamic_flags = read_be<uint8_t>(in, offset + 5);
   object_phase = ((dynamic_flags & 0x01) > 0) ? TRACKING : INITIALIZATION;
   dynamic_property = static_cast<DynamicProperty>((dynamic_flags & 0x70) > 0);
-  relative_time_of_measure = read_be<uint16_t>(in, 2, 6);
-  position_closest_point.parse(&in[8], BE);
-  relative_velocity.parse(&in[12], BE);
-  relative_velocity_sigma.parse(&in[16], BE);
-  classification = static_cast<Classification>(read_be<uint8_t>(in, 1, 20));
-  classification_age = read_be<uint16_t>(in, 2, 22);
-  object_box_size.parse(&in[26], BE);
-  object_box_size_sigma.parse(&in[30], BE);
-  object_box_orientation = read_be<int16_t>(in, 2, 34);
-  object_box_orientation_sigma = read_be<uint16_t>(in, 2, 36);
-  tracking_point_location = static_cast<PointLocation>(read_be<uint8_t>(in, 1, 39));
-  tracking_point_coordinate.parse(&in[40], BE);
-  tracking_point_coordinate_sigma.parse(&in[44], BE);
-  velocity.parse(&in[51], BE);
-  velocity_sigma.parse(&in[55], BE);
-  acceleration.parse(&in[61], BE);
-  acceleration_sigma.parse(&in[65], BE);
-  yaw_rate = read_be<int16_t>(in, 2, 71);
-  yaw_rate_sigma = read_be<uint16_t>(in, 2, 73);
-  number_of_contour_points = read_be<uint8_t>(in, 1, 75);
+  relative_time_of_measure = read_be<uint16_t>(in, offset + 6);
+  position_closest_point.parse(in, offset + 8, ByteOrder::BE);
+  relative_velocity.parse(in, offset + 12, ByteOrder::BE);
+  relative_velocity_sigma.parse(in, offset + 16, ByteOrder::BE);
+  classification = static_cast<Classification>(read_be<uint8_t>(in, offset + 20));
+  classification_age = read_be<uint16_t>(in, offset + 22);
+  object_box_size.parse(in, offset + 26, ByteOrder::BE);
+  object_box_size_sigma.parse(in, offset + 30, ByteOrder::BE);
+  object_box_orientation = read_be<int16_t>(in, offset + 34);
+  object_box_orientation_sigma = read_be<uint16_t>(in, offset + 36);
+  tracking_point_location = static_cast<PointLocation>(read_be<uint8_t>(in, offset + 39));
+  tracking_point_coordinate.parse(in, offset + 40, ByteOrder::BE);
+  tracking_point_coordinate_sigma.parse(in, offset + 44, ByteOrder::BE);
+  velocity.parse(in, offset + 51, ByteOrder::BE);
+  velocity_sigma.parse(in, offset + 55, ByteOrder::BE);
+  acceleration.parse(in, offset + 61, ByteOrder::BE);
+  acceleration_sigma.parse(in, offset + 65, ByteOrder::BE);
+  yaw_rate = read_be<int16_t>(in, offset + 71);
+  yaw_rate_sigma = read_be<uint16_t>(in, offset + 73);
+  number_of_contour_points = read_be<uint8_t>(in, offset + 75);
 
   if (number_of_contour_points == 255)
     number_of_contour_points = 0;
@@ -191,107 +213,107 @@ void TrackedProperties::parse(uint8_t *in)
   for (uint8_t i = 0; i < number_of_contour_points; i++)
   {
     ContourPointSigma new_contour_point;
-    new_contour_point.parse(&in[76 + i * 8], BE);
+    new_contour_point.parse(in, offset + 76 + (i * 8), ByteOrder::BE);
     contour_point_list.push_back(new_contour_point);
   }
 }
 
-void ScanPoint2202::parse(uint8_t *in)
+void ScanPoint2202::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
 {
-  uint8_t layer_and_offset = read_le<uint8_t>(in, 1, 0);
+  uint8_t layer_and_offset = read_le<uint8_t>(in, offset);
   std::cout << std::hex;
   layer = (layer_and_offset & 0x0F);
   echo = ((layer_and_offset & 0xF0) >> 4);
-  uint8_t flags = read_le<uint8_t>(in, 1, 1);
+  uint8_t flags = read_le<uint8_t>(in, offset + 1);
   transparent_point = ((flags & 0x01) > 0);
   clutter_atmospheric = ((flags & 0x02) > 0);
   ground = ((flags & 0x04) > 0);
   dirt = ((flags & 0x08) > 0);
-  horizontal_angle = read_le<int16_t>(in, 2, 2);
-  radial_distance = read_le<uint16_t>(in, 2, 4);
-  echo_pulse_width = read_le<uint16_t>(in, 2, 6);
+  horizontal_angle = read_le<int16_t>(in, offset + 2);
+  radial_distance = read_le<uint16_t>(in, offset + 4);
+  echo_pulse_width = read_le<uint16_t>(in, offset + 6);
 }
 
-void ScanPoint2204::parse(uint8_t *in)
+void ScanPoint2204::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
 {
-  x_position = read_be<float>(in, 4, 0);
-  y_position = read_be<float>(in, 4, 4);
-  z_position = read_be<float>(in, 4, 8);
-  echo_width = read_be<float>(in, 4, 12);
-  device_id = read_be<uint8_t>(in, 1, 16);
-  layer = read_be<uint8_t>(in, 1, 17);
-  echo = read_be<uint8_t>(in, 1, 18);
-  time_offset = read_be<uint32_t>(in, 4, 20);
+  x_position = read_be<float>(in, offset + 0);
+  y_position = read_be<float>(in, offset + 4);
+  z_position = read_be<float>(in, offset + 8);
+  echo_width = read_be<float>(in, offset + 12);
+  device_id = read_be<uint8_t>(in, offset + 16);
+  layer = read_be<uint8_t>(in, offset + 17);
+  echo = read_be<uint8_t>(in, offset + 18);
+  time_offset = read_be<uint32_t>(in, offset + 20);
 
-  uint16_t flags = read_be<uint16_t>(in, 2, 24);
+  uint16_t flags = read_be<uint16_t>(in, offset + 24);
 
   ground = ((flags & 0x0001) > 0);
   dirt = ((flags & 0x0002) > 0);
   precipitation = ((flags & 0x0004) > 0);
 }
 
-void ScanPoint2205::parse(uint8_t *in)
+void ScanPoint2205::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
 {
-  x_position = read_be<float>(in, 4, 0);
-  y_position = read_be<float>(in, 4, 4);
-  z_position = read_be<float>(in, 4, 8);
-  echo_width = read_be<float>(in, 4, 12);
-  device_id = read_be<uint8_t>(in, 1, 16);
-  layer = read_be<uint8_t>(in, 1, 17);
-  echo = read_be<uint8_t>(in, 1, 18);
-  time_offset = read_be<uint8_t>(in, 4, 20);
-  uint16_t flags = read_be<uint8_t>(in, 2, 24);
+  x_position = read_be<float>(in, offset);
+  y_position = read_be<float>(in, offset + 4);
+  z_position = read_be<float>(in, offset + 8);
+  echo_width = read_be<float>(in, offset + 12);
+  device_id = read_be<uint8_t>(in, offset + 16);
+  layer = read_be<uint8_t>(in, offset + 17);
+  echo = read_be<uint8_t>(in, offset + 18);
+  time_offset = read_be<uint8_t>(in, offset + 20);
+  uint16_t flags = read_be<uint8_t>(in, offset + 24);
   ground = ((flags & 0x0001) > 0);
   dirt = ((flags & 0x0002) > 0);
   precipitation = ((flags & 0x0004) > 2);
   transparent = ((flags & 0x1000) > 12);
 }
 
-void ScanPoint2208::parse(uint8_t *in)
+void ScanPoint2208::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
 {
-  echo = (read_be<uint8_t>(in, 1, 0) & 0x0C);
-  layer = read_be<uint8_t>(in, 1, 1);  // & 0x03; < should be whole byte, but this gives unexpected results.
-  uint16_t flags = read_be<uint16_t>(in, 2, 2);
+  echo = (read_be<uint8_t>(in, offset) & 0x0C);
+  layer = read_be<uint8_t>(in, offset + 1);  // & 0x03; < should be whole byte, but this gives unexpected results.
+  uint16_t flags = read_be<uint16_t>(in, offset + 2);
   transparent_point = ((flags & 0x0001) > 0);
   clutter_atmospheric = ((flags & 0x0002) > 0);
   ground = ((flags & 0x0004) > 0);
   dirt = ((flags & 0x0008) > 0);
-  horizontal_angle = read_be<int16_t>(in, 2, 4);
-  radial_distance = read_be<uint16_t>(in, 2, 6);
-  echo_pulse_width = read_be<uint16_t>(in, 2, 8);
+  horizontal_angle = read_be<int16_t>(in, offset + 4);
+  radial_distance = read_be<uint16_t>(in, offset + 6);
+  echo_pulse_width = read_be<uint16_t>(in, offset + 8);
 }
 
-void Object2221::parse(uint8_t *in)
+void Object2221::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
 {
-  id = read_le<uint16_t>(in, 2, 0);
-  age = read_le<uint16_t>(in, 2, 2);
-  prediction_age = read_le<uint16_t>(in, 2, 4);
-  relative_timestamp = read_le<uint16_t>(in, 2, 6);
-  reference_point.x = read_le<int16_t>(in, 2, 8);
-  reference_point.y = read_le<int16_t>(in, 2, 10);
-  reference_point_sigma.x = read_le<int16_t>(in, 2, 12);
-  reference_point_sigma.y = read_le<int16_t>(in, 2, 14);
-  closest_point.x = read_le<int16_t>(in, 2, 16);
-  closest_point.y = read_le<int16_t>(in, 2, 18);
-  bounding_box_center.x = read_le<int16_t>(in, 2, 20);
-  bounding_box_center.y = read_le<int16_t>(in, 2, 22);
-  bounding_box_width = read_le<uint16_t>(in, 2, 24);
-  bounding_box_length = read_le<uint16_t>(in, 2, 26);
-  object_box_center.x = read_le<int16_t>(in, 2, 28);
-  object_box_center.y = read_le<int16_t>(in, 2, 30);
-  object_box_size.size_x = read_le<uint16_t>(in, 2, 32);
-  object_box_size.size_y = read_le<uint16_t>(in, 2, 34);
-  object_box_orientation = read_le<int16_t>(in, 2, 36);
-  absolute_velocity.x = read_le<int16_t>(in, 2, 38);
-  absolute_velocity.y = read_le<int16_t>(in, 2, 40);
-  absolute_velocity_sigma.size_x = read_le<uint16_t>(in, 2, 42);
-  absolute_velocity_sigma.size_y = read_le<uint16_t>(in, 2, 44);
-  relative_velocity.x = read_le<int16_t>(in, 2, 46);
-  relative_velocity.y = read_le<int16_t>(in, 2, 48);
-  classification = static_cast<Classification>(read_le<uint8_t>(in, 1, 50));
-  classification_age = read_le<uint16_t>(in, 2, 52);
-  classification_certainty = read_le<uint16_t>(in, 2, 54);
-  number_of_contour_points = read_le<uint16_t>(in, 2, 56);
+  id = read_le<uint16_t>(in, offset);
+  age = read_le<uint16_t>(in, offset + 2);
+  prediction_age = read_le<uint16_t>(in, offset + 4);
+  relative_timestamp = read_le<uint16_t>(in, offset + 6);
+  reference_point.x = read_le<int16_t>(in, offset + 8);
+  reference_point.y = read_le<int16_t>(in, offset + 10);
+  reference_point_sigma.x = read_le<int16_t>(in, offset + 12);
+  reference_point_sigma.y = read_le<int16_t>(in, offset + 14);
+  closest_point.x = read_le<int16_t>(in, offset + 16);
+  closest_point.y = read_le<int16_t>(in, offset + 18);
+  bounding_box_center.x = read_le<int16_t>(in, offset + 20);
+  bounding_box_center.y = read_le<int16_t>(in, offset + 22);
+  bounding_box_width = read_le<uint16_t>(in, offset + 24);
+  bounding_box_length = read_le<uint16_t>(in, offset + 26);
+  object_box_center.x = read_le<int16_t>(in, offset + 28);
+  object_box_center.y = read_le<int16_t>(in, offset + 30);
+  object_box_size.size_x = read_le<uint16_t>(in, offset + 32);
+  object_box_size.size_y = read_le<uint16_t>(in, offset + 34);
+  object_box_orientation = read_le<int16_t>(in, offset + 36);
+  absolute_velocity.x = read_le<int16_t>(in, offset + 38);
+  absolute_velocity.y = read_le<int16_t>(in, offset + 40);
+  absolute_velocity_sigma.size_x = read_le<uint16_t>(in, offset + 42);
+  absolute_velocity_sigma.size_y = read_le<uint16_t>(in, offset + 44);
+  relative_velocity.x = read_le<int16_t>(in, offset + 46);
+  relative_velocity.y = read_le<int16_t>(in, offset + 48);
+  classification = static_cast<Classification>(read_le<uint8_t>(in, offset + 50));
+  classification_age = read_le<uint16_t>(in, offset + 52);
+  classification_certainty = read_le<uint16_t>(in, offset + 54);
+  number_of_contour_points = read_le<uint16_t>(in, offset + 56);
 
   if (number_of_contour_points == 65535)
     number_of_contour_points = 0;
@@ -299,32 +321,32 @@ void Object2221::parse(uint8_t *in)
   for (uint16_t i = 0; i < number_of_contour_points; i++)
   {
     Point2Di contour_point;
-    contour_point.parse(&in[58 + i * 4], LE);
+    contour_point.parse(in, offset + 58 + (i * 4), ByteOrder::LE);
     contour_point_list.push_back(contour_point);
   }
 }
 
-void Object2225::parse(uint8_t *in)
+void Object2225::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
 {
-  id = read_be<uint16_t>(in, 2, 0);
-  age = read_be<uint32_t>(in, 4, 4);
-  timestamp = read_be<NTPTime>(in, 8, 8);
-  hidden_status_age = read_be<uint16_t>(in, 2, 16);
-  classification = static_cast<Classification>(read_be<uint8_t>(in, 1, 18));
-  classification_certainty = read_be<uint8_t>(in, 1, 19);
-  classification_age = read_be<uint32_t>(in, 4, 20);
-  bounding_box_center.parse(&in[24], BE);
-  bounding_box_size.parse(&in[32], BE);
-  object_box_center.parse(&in[40], BE);
-  object_box_center_sigma.parse(&in[48], BE);
-  object_box_size.parse(&in[56], BE);
-  yaw_angle = read_be<float>(in, 4, 72);
-  relative_velocity.parse(&in[80], BE);
-  relative_velocity_sigma.parse(&in[88], BE);
-  absolute_velocity.parse(&in[96], BE);
-  absolute_velocity_sigma.parse(&in[104], BE);
-  number_of_contour_points = read_be<uint8_t>(in, 1, 130);
-  closest_point_index = read_be<uint8_t>(in, 1, 131);
+  id = read_be<uint16_t>(in, offset);
+  age = read_be<uint32_t>(in, offset + 4);
+  timestamp = read_be<NTPTime>(in, offset + 8);
+  hidden_status_age = read_be<uint16_t>(in, offset + 16);
+  classification = static_cast<Classification>(read_be<uint8_t>(in, offset + 18));
+  classification_certainty = read_be<uint8_t>(in, offset + 19);
+  classification_age = read_be<uint32_t>(in, offset + 20);
+  bounding_box_center.parse(in, offset + 24, ByteOrder::BE);
+  bounding_box_size.parse(in, offset + 32, ByteOrder::BE);
+  object_box_center.parse(in, offset + 40, ByteOrder::BE);
+  object_box_center_sigma.parse(in, offset + 48, ByteOrder::BE);
+  object_box_size.parse(in, offset + 56, ByteOrder::BE);
+  yaw_angle = read_be<float>(in, offset + 72);
+  relative_velocity.parse(in, offset + 80, ByteOrder::BE);
+  relative_velocity_sigma.parse(in, offset + 88, ByteOrder::BE);
+  absolute_velocity.parse(in, offset + 96, ByteOrder::BE);
+  absolute_velocity_sigma.parse(in, offset + 104, ByteOrder::BE);
+  number_of_contour_points = read_be<uint8_t>(in, offset + 130);
+  closest_point_index = read_be<uint8_t>(in, offset + 131);
 
   if (number_of_contour_points == 255)
     number_of_contour_points = 0;
@@ -332,44 +354,44 @@ void Object2225::parse(uint8_t *in)
   for (uint8_t i = 0; i < number_of_contour_points; i++)
   {
     Point2Df contour_point;
-    contour_point.parse(&in[132 + i * 8], BE);
+    contour_point.parse(in, offset + 132 + (i * 8), ByteOrder::BE);
     contour_point_list.push_back(contour_point);
   }
 }
 
-void Object2270::parse(uint8_t *in)
+void Object2270::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
 {
-  id = read_le<uint16_t>(in, 2, 0);
-  age = read_le<uint16_t>(in, 2, 2);
-  prediction_age = read_le<uint16_t>(in, 2, 4);
-  relative_moment_of_measurement = read_le<uint16_t>(in, 2, 6);
-  reference_point_location = static_cast<PointLocation>(read_le<uint8_t>(in, 1, 9));
-  reference_point_position_x = read_le<int16_t>(in, 2, 10);
-  reference_point_position_y = read_le<int16_t>(in, 2, 12);
-  reference_point_position_sigma_x = read_le<uint16_t>(in, 2, 14);
-  reference_point_position_sigma_y = read_le<uint16_t>(in, 2, 16);
-  contour_points_cog_x = read_le<int16_t>(in, 2, 36);
-  contour_points_cog_y = read_le<int16_t>(in, 2, 38);
-  object_box_length = read_le<uint16_t>(in, 2, 40);
-  object_box_width = read_le<uint16_t>(in, 2, 42);
-  object_box_orientation_angle = read_le<int16_t>(in, 2, 44);
-  object_box_orientation_angle_sigma = read_le<int16_t>(in, 2, 50);
-  absolute_velocity_x = read_le<int16_t>(in, 2, 52);
-  absolute_velocity_y = read_le<int16_t>(in, 2, 54);
-  absolute_velocity_sigma_x = read_le<uint16_t>(in, 2, 56);
-  absolute_velocity_sigma_y = read_le<uint16_t>(in, 2, 58);
-  relative_velocity_x = read_le<int16_t>(in, 2, 60);
-  relative_velocity_y = read_le<int16_t>(in, 2, 62);
-  relative_velocity_sigma_x = read_le<uint16_t>(in, 2, 64);
-  relative_velocity_sigma_y = read_le<uint16_t>(in, 2, 66);
-  classification = static_cast<Classification>(read_le<uint8_t>(in, 1, 68));
-  uint8_t flags = read_le<uint8_t>(in, 1, 69);
+  id = read_le<uint16_t>(in, offset);
+  age = read_le<uint16_t>(in, offset + 2);
+  prediction_age = read_le<uint16_t>(in, offset + 4);
+  relative_moment_of_measurement = read_le<uint16_t>(in, offset + 6);
+  reference_point_location = static_cast<PointLocation>(read_le<uint8_t>(in, offset + 9));
+  reference_point_position_x = read_le<int16_t>(in, offset + 10);
+  reference_point_position_y = read_le<int16_t>(in, offset + 12);
+  reference_point_position_sigma_x = read_le<uint16_t>(in, offset + 14);
+  reference_point_position_sigma_y = read_le<uint16_t>(in, offset + 16);
+  contour_points_cog_x = read_le<int16_t>(in, offset + 36);
+  contour_points_cog_y = read_le<int16_t>(in, offset + 38);
+  object_box_length = read_le<uint16_t>(in, offset + 40);
+  object_box_width = read_le<uint16_t>(in, offset + 42);
+  object_box_orientation_angle = read_le<int16_t>(in, offset + 44);
+  object_box_orientation_angle_sigma = read_le<int16_t>(in, offset + 50);
+  absolute_velocity_x = read_le<int16_t>(in, offset + 52);
+  absolute_velocity_y = read_le<int16_t>(in, offset + 54);
+  absolute_velocity_sigma_x = read_le<uint16_t>(in, offset + 56);
+  absolute_velocity_sigma_y = read_le<uint16_t>(in, offset + 58);
+  relative_velocity_x = read_le<int16_t>(in, offset + 60);
+  relative_velocity_y = read_le<int16_t>(in, offset + 62);
+  relative_velocity_sigma_x = read_le<uint16_t>(in, offset + 64);
+  relative_velocity_sigma_y = read_le<uint16_t>(in, offset + 66);
+  classification = static_cast<Classification>(read_le<uint8_t>(in, offset + 68));
+  uint8_t flags = read_le<uint8_t>(in, offset + 69);
   tracking_model = ((flags & 0x01) > 0) ? STATIC : DYNAMIC;
   mobile_detected = ((flags & 0x02) > 0);
   track_valid = ((flags & 0x04) > 0);
-  classification_age = read_le<uint16_t>(in, 2, 70);
-  classification_confidence = read_le<uint16_t>(in, 2, 72);
-  number_of_contour_points = read_le<uint16_t>(in, 2, 74);
+  classification_age = read_le<uint16_t>(in, offset + 70);
+  classification_confidence = read_le<uint16_t>(in, offset + 72);
+  number_of_contour_points = read_le<uint16_t>(in, offset + 74);
 
   if (number_of_contour_points == 65535)
     number_of_contour_points = 0;
@@ -377,21 +399,21 @@ void Object2270::parse(uint8_t *in)
   for (uint16_t i = 0; i < number_of_contour_points; i++)
   {
     Point2Di contour_point;
-    contour_point.parse(&in[76 + i * 4], LE);
+    contour_point.parse(in, offset + 76 + (i * 4), ByteOrder::LE);
     contour_point_list.push_back(contour_point);
   }
 }
 
-void Object2271::parse(uint8_t *in)
+void Object2271::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
 {
-  id = read_be<uint32_t>(in, 4, 0);
-  uint8_t properties_available = read_be<uint8_t>(in, 1, 6);
+  id = read_be<uint32_t>(in, offset);
+  uint8_t properties_available = read_be<uint8_t>(in, offset + 6);
   untracked_properties_available = ((properties_available & 0x02) > 0);
   tracked_properties_available = ((properties_available & 0x08) > 0);
 
   if (untracked_properties_available)
   {
-    untracked_properties.parse(&in[7]);
+    untracked_properties.parse(in, offset + 7);
   }
   else
   {
@@ -400,7 +422,7 @@ void Object2271::parse(uint8_t *in)
 
   if (tracked_properties_available)
   {
-    tracked_properties.parse(&in[42 + untracked_properties.number_of_contour_points * 8]);
+    tracked_properties.parse(in, offset + 42 + (untracked_properties.number_of_contour_points * 8));
   }
   else
   {
@@ -408,37 +430,37 @@ void Object2271::parse(uint8_t *in)
   }
 }
 
-void Object2280::parse(uint8_t *in)
+void Object2280::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
 {
-  id = read_be<uint16_t>(in, 2, 0);
+  id = read_be<uint16_t>(in, offset);
 
-  uint16_t flags = read_be<uint16_t>(in, 2, 2);
+  uint16_t flags = read_be<uint16_t>(in, offset + 2);
   tracking_model = ((flags & 0x40) > 0) ? STATIC : DYNAMIC;
   mobility_of_dyn_object_detected = ((flags & 0x80) > 0);
   motion_model_validated = ((flags & 0x100) > 0);
-  object_age = read_be<uint32_t>(in, 4, 4);
-  timestamp = read_be<NTPTime>(in, 8, 8);
-  object_prediction_age = read_be<uint16_t>(in, 2, 16);
-  classification = static_cast<Classification>(read_be<uint8_t>(in, 1, 18));
-  classification_certainty = read_be<uint8_t>(in, 1, 19);
-  classification_age = read_be<uint32_t>(in, 4, 20);
-  object_box_center.parse(&in[40], BE);
-  object_box_center_sigma.parse(&in[48], BE);
-  object_box_size.parse(&in[56], BE);
-  object_box_orientation_angle = read_be<float>(in, 4, 72);
-  object_box_orientation_angle_sigma = read_be<float>(in, 4, 76);
-  relative_velocity.parse(&in[80], BE);
-  relative_velocity_sigma.parse(&in[88], BE);
-  absolute_velocity.parse(&in[96], BE);
-  absolute_velocity_sigma.parse(&in[104], BE);
-  number_of_contour_points = read_be<uint8_t>(in, 1, 130);
-  closest_point_index = read_be<uint8_t>(in, 1, 131);
-  reference_point_location = static_cast<PointLocation>(read_be<uint16_t>(in, 2, 132));
-  reference_point_coordinate.parse(&in[134], BE);
-  reference_point_coordinate_sigma.parse(&in[142], BE);
-  reference_point_position_correction_coefficient = read_be<float>(in, 4, 150);
-  object_priority = read_be<uint16_t>(in, 2, 162);
-  object_existence_measurement = read_be<float>(in, 4, 164);
+  object_age = read_be<uint32_t>(in, offset + 4);
+  timestamp = read_be<NTPTime>(in, offset + 8);
+  object_prediction_age = read_be<uint16_t>(in, offset + 16);
+  classification = static_cast<Classification>(read_be<uint8_t>(in, offset + 18));
+  classification_certainty = read_be<uint8_t>(in, offset + 19);
+  classification_age = read_be<uint32_t>(in, offset + 20);
+  object_box_center.parse(in, offset + 40, ByteOrder::BE);
+  object_box_center_sigma.parse(in, offset + 48, ByteOrder::BE);
+  object_box_size.parse(in, offset + 56, ByteOrder::BE);
+  object_box_orientation_angle = read_be<float>(in, offset + 72);
+  object_box_orientation_angle_sigma = read_be<float>(in, offset + 76);
+  relative_velocity.parse(in, offset + 80, ByteOrder::BE);
+  relative_velocity_sigma.parse(in, offset + 88, ByteOrder::BE);
+  absolute_velocity.parse(in, offset + 96, ByteOrder::BE);
+  absolute_velocity_sigma.parse(in, offset + 104, ByteOrder::BE);
+  number_of_contour_points = read_be<uint8_t>(in, offset + 130);
+  closest_point_index = read_be<uint8_t>(in, offset + 131);
+  reference_point_location = static_cast<PointLocation>(read_be<uint16_t>(in, offset + 132));
+  reference_point_coordinate.parse(in, offset + 134, ByteOrder::BE);
+  reference_point_coordinate_sigma.parse(in, offset + 142, ByteOrder::BE);
+  reference_point_position_correction_coefficient = read_be<float>(in, offset + 150);
+  object_priority = read_be<uint16_t>(in, offset + 162);
+  object_existence_measurement = read_be<float>(in, offset + 164);
 
   if (number_of_contour_points == 255)
     number_of_contour_points = 0;
@@ -446,19 +468,19 @@ void Object2280::parse(uint8_t *in)
   for (uint8_t i = 0; i < number_of_contour_points; i++)
   {
     Point2Df new_contour_point;
-    new_contour_point.parse(&in[168 + i * 8], BE);
+    new_contour_point.parse(in, offset + 168 + (i * 8), ByteOrder::BE);
     contour_point_list.push_back(new_contour_point);
   }
 }
 
 // High-level message parsers.
-void IbeoDataHeader::parse(uint8_t *in)
+void IbeoDataHeader::parse(const std::vector<uint8_t>& in)
 {
-  previous_message_size = read_be<uint32_t>(in, 4, 4);
-  message_size = read_be<uint32_t>(in, 4, 8);
-  device_id = read_be<uint8_t>(in, 1, 13);
-  data_type_id = read_be<uint16_t>(in, 2, 14);
-  time = read_be<NTPTime>(in, 8, 16);
+  previous_message_size = read_be<uint32_t>(in, 4);
+  message_size = read_be<uint32_t>(in, 8);
+  device_id = read_be<uint8_t>(in, 13);
+  data_type_id = read_be<uint16_t>(in, 14);
+  time = read_be<NTPTime>(in, 16);
 }
 
 void IbeoDataHeader::encode()
@@ -569,16 +591,16 @@ std::vector<IbeoObject> IbeoTxMessage::get_objects()
   return std::vector<IbeoObject>();
 }
 
-void ErrorWarning::parse(uint8_t *in)
+void ErrorWarning::parse(const std::vector<uint8_t>& in)
 {
   ibeo_header.parse(in);
 
-  in = &in[IBEO_HEADER_SIZE];
+  uint16_t hdr = IBEO_HEADER_SIZE;
 
-  uint16_t err_reg_1 = read_le<uint16_t>(in, 2, 0);
-  uint16_t err_reg_2 = read_le<uint16_t>(in, 2, 2);
-  uint16_t wrn_reg_1 = read_le<uint16_t>(in, 2, 4);
-  uint16_t wrn_reg_2 = read_le<uint16_t>(in, 2, 6);
+  uint16_t err_reg_1 = read_le<uint16_t>(in, hdr);
+  uint16_t err_reg_2 = read_le<uint16_t>(in, hdr + 2);
+  uint16_t wrn_reg_1 = read_le<uint16_t>(in, hdr + 4);
+  uint16_t wrn_reg_2 = read_le<uint16_t>(in, hdr + 6);
 
   err_internal_error = ((err_reg_1 & 0x0001) > 0);
   err_motor_1_fault = ((err_reg_1 & 0x0002) > 0);
@@ -626,29 +648,29 @@ ScanData2202::ScanData2202() :
   IbeoTxMessage(true, false, false)
 {}
 
-void ScanData2202::parse(uint8_t *in)
+void ScanData2202::parse(const std::vector<uint8_t>& in)
 {
   ibeo_header.parse(in);
 
-  in = &in[IBEO_HEADER_SIZE];
+  uint16_t hdr = IBEO_HEADER_SIZE;
 
-  scan_number = read_le<uint16_t>(in, 2, 0);
-  scanner_status = read_le<uint16_t>(in, 2, 2);
-  sync_phase_offset  = read_le<uint16_t>(in, 2, 4);
-  scan_start_time = read_le<NTPTime>(in, 8, 6);
-  scan_end_time = read_le<NTPTime>(in, 8, 14);
-  angle_ticks_per_rotation = read_le<uint16_t>(in, 2, 22);
-  start_angle_ticks = read_le<int16_t>(in, 2, 24);
-  end_angle_ticks = read_le<int16_t>(in, 2, 26);
-  scan_points_count = read_le<uint16_t>(in, 2, 28);
-  mounting_yaw_angle_ticks = read_le<int16_t>(in, 2, 30);
-  mounting_pitch_angle_ticks = read_le<int16_t>(in, 2, 32);
-  mounting_roll_angle_ticks = read_le<int16_t>(in, 2, 34);
-  mounting_position_x = read_le<int16_t>(in, 2, 36);
-  mounting_position_y = read_le<int16_t>(in, 2, 38);
-  mounting_position_z = read_le<int16_t>(in, 2, 40);
+  scan_number = read_le<uint16_t>(in, hdr);
+  scanner_status = read_le<uint16_t>(in, hdr + 2);
+  sync_phase_offset  = read_le<uint16_t>(in, hdr + 4);
+  scan_start_time = read_le<NTPTime>(in, hdr + 6);
+  scan_end_time = read_le<NTPTime>(in, hdr + 14);
+  angle_ticks_per_rotation = read_le<uint16_t>(in, hdr + 22);
+  start_angle_ticks = read_le<int16_t>(in, hdr + 24);
+  end_angle_ticks = read_le<int16_t>(in, hdr + 26);
+  scan_points_count = read_le<uint16_t>(in, hdr + 28);
+  mounting_yaw_angle_ticks = read_le<int16_t>(in, hdr + 30);
+  mounting_pitch_angle_ticks = read_le<int16_t>(in, hdr + 32);
+  mounting_roll_angle_ticks = read_le<int16_t>(in, hdr + 34);
+  mounting_position_x = read_le<int16_t>(in, hdr + 36);
+  mounting_position_y = read_le<int16_t>(in, hdr + 38);
+  mounting_position_z = read_le<int16_t>(in, hdr + 40);
 
-  uint16_t flags = read_le<uint16_t>(in, 2, 42);
+  uint16_t flags = read_le<uint16_t>(in, hdr + 42);
   ground_labeled = ((flags & 0x0001) > 0);
   dirt_labeled = ((flags & 0x0002) > 0);
   rain_labeled = ((flags & 0x0004) > 0);
@@ -657,7 +679,7 @@ void ScanData2202::parse(uint8_t *in)
   for (uint16_t i = 0; i < scan_points_count; i++)
   {
     ScanPoint2202 new_scan_point;
-    new_scan_point.parse(&in[44 + i * 10]);
+    new_scan_point.parse(in, hdr + 44 + (i * 10));
     scan_point_list.push_back(new_scan_point);
   }
 }
@@ -714,16 +736,16 @@ ScanData2204::ScanData2204() :
   IbeoTxMessage(true, false, false)
 {}
 
-void ScanData2204::parse(uint8_t *in)
+void ScanData2204::parse(const std::vector<uint8_t>& in)
 {
   ibeo_header.parse(in);
 
-  in = &in[IBEO_HEADER_SIZE];
+  uint16_t hdr = IBEO_HEADER_SIZE;
 
-  scan_start_time = read_be<NTPTime>(in, 8, 0);
-  scan_end_time_offset = read_be<uint32_t>(in, 4, 8);
+  scan_start_time = read_be<NTPTime>(in, hdr);
+  scan_end_time_offset = read_be<uint32_t>(in, hdr + 8);
 
-  uint32_t flags = read_be<uint32_t>(in, 4, 12);
+  uint32_t flags = read_be<uint32_t>(in, hdr + 12);
   ground_labeled = ((flags & 0x00000001) > 0);
   dirt_labeled = ((flags & 0x00000002) > 0);
   rain_labeled = ((flags & 0x00000004) > 0);
@@ -731,21 +753,21 @@ void ScanData2204::parse(uint8_t *in)
   mirror_side = ((flags & 0x00000200) > 0) ? REAR : FRONT;
   coordinate_system = ((flags & 0x00000400) > 0) ? VEHICLE : SCANNER;
 
-  scan_number = read_be<uint16_t>(in, 2, 16);
-  scan_points = read_be<uint16_t>(in, 2, 18);
-  number_of_scanner_infos = read_be<uint8_t>(in, 1, 20);
+  scan_number = read_be<uint16_t>(in, hdr + 16);
+  scan_points = read_be<uint16_t>(in, hdr + 18);
+  number_of_scanner_infos = read_be<uint8_t>(in, hdr + 20);
 
   for (uint8_t i = 0; i < number_of_scanner_infos; i++)
   {
     ScannerInfo2204 scanner_info;
-    scanner_info.parse(&in[24 + i * 40]);
+    scanner_info.parse(in, hdr + 24 + (i * 40));
     scanner_info_list.push_back(scanner_info);
   }
 
   for (uint16_t i = 0; i < scan_points; i++)
   {
     ScanPoint2204 scan_point;
-    scan_point.parse(&in[24 + (number_of_scanner_infos * 40) + (i * 28)]);
+    scan_point.parse(in, hdr + 24 + (number_of_scanner_infos * 40) + (i * 28));
     scan_point_list.push_back(scan_point);
   }
 }
@@ -775,37 +797,37 @@ ScanData2205::ScanData2205() :
   IbeoTxMessage(true, false, false)
 {}
 
-void ScanData2205::parse(uint8_t *in)
+void ScanData2205::parse(const std::vector<uint8_t>& in)
 {
   ibeo_header.parse(in);
 
-  in = &in[IBEO_HEADER_SIZE];
+  uint16_t hdr = IBEO_HEADER_SIZE;
 
-  scan_start_time = read_be<NTPTime>(in, 8, 0);
-  scan_end_time_offset = read_be<uint32_t>(in, 4, 8);
+  scan_start_time = read_be<NTPTime>(in, hdr);
+  scan_end_time_offset = read_be<uint32_t>(in, hdr + 8);
 
-  uint32_t flags = read_be<uint32_t>(in, 4, 12);
+  uint32_t flags = read_be<uint32_t>(in, hdr + 12);
   fused_scan = ((flags & 0x00000100) > 0);
   mirror_side = ((flags & 0x00000200) > 0) ? REAR : FRONT;
   coordinate_system = ((flags & 0x00000400) > 0) ? VEHICLE : SCANNER;
 
-  scan_number = read_be<uint16_t>(in, 2, 16);
-  scan_points = read_be<uint16_t>(in, 2, 18);
-  number_of_scanner_infos = read_be<uint8_t>(in, 1, 20);
+  scan_number = read_be<uint16_t>(in, hdr + 16);
+  scan_points = read_be<uint16_t>(in, hdr + 18);
+  number_of_scanner_infos = read_be<uint8_t>(in, hdr + 20);
 
   // printf("%d SCAN POINTS REPORTED\n", scan_points);
 
   for (uint8_t i = 0; i < number_of_scanner_infos; i++)
   {
     ScannerInfo2205 new_scanner_info;
-    new_scanner_info.parse(&in[24 + i * 148]);
+    new_scanner_info.parse(in, hdr + 24 + (i * 148));
     scanner_info_list.push_back(new_scanner_info);
   }
 
   for (uint16_t i = 0; i < scan_points; i++)
   {
     ScanPoint2205 new_scan_point;
-    new_scan_point.parse(&in[24 + (number_of_scanner_infos * 148) + (i * 28)]);
+    new_scan_point.parse(in, hdr + 24 + (number_of_scanner_infos * 148) + (i * 28));
     scan_point_list.push_back(new_scan_point);
   }
 }
@@ -835,41 +857,41 @@ ScanData2208::ScanData2208() :
   IbeoTxMessage(true, false, false)
 {}
 
-void ScanData2208::parse(uint8_t *in)
+void ScanData2208::parse(const std::vector<uint8_t>& in)
 {
   ibeo_header.parse(in);
 
-  in = &in[IBEO_HEADER_SIZE];
+  uint16_t hdr = IBEO_HEADER_SIZE;
 
-  scan_number = read_be<uint16_t>(in, 2, 0);
-  scanner_type = read_be<uint16_t>(in, 2, 2);
-  uint16_t scanner_status = read_be<uint16_t>(in, 2, 4);
+  scan_number = read_be<uint16_t>(in, hdr);
+  scanner_type = read_be<uint16_t>(in, hdr + 2);
+  uint16_t scanner_status = read_be<uint16_t>(in, hdr + 4);
   motor_on = ((scanner_status & 0x0001) > 0);
   laser_on = ((scanner_status & 0x0002) > 0);
   frequency_locked = ((scanner_status & 0x0004) > 0);
   motor_rotating_direction = ((scanner_status & 0x0100) > 0) ? COUNTER_CLOCKWISE : CLOCKWISE;
-  angle_ticks_per_rotation = read_be<uint16_t>(in, 2, 6);
-  scan_flags = read_be<uint32_t>(in, 4, 8);
-  mounting_yaw_angle_ticks = read_be<int16_t>(in, 2, 12);
-  mounting_pitch_angle_ticks = read_be<int16_t>(in, 2, 14);
-  mounting_roll_angle_ticks = read_be<int16_t>(in, 2, 16);
-  mounting_position_x = read_be<int16_t>(in, 2, 18);
-  mounting_position_y = read_be<int16_t>(in, 2, 20);
-  mounting_position_z = read_be<int16_t>(in, 2, 22);
-  device_id = read_be<uint8_t>(in, 1, 50);
-  scan_start_time = read_be<NTPTime>(in, 8, 52);
-  scan_end_time = read_be<NTPTime>(in, 8, 60);
-  start_angle_ticks = read_be<int16_t>(in, 2, 68);
-  end_angle_ticks = read_be<int16_t>(in, 2, 70);
-  subflags = read_be<uint8_t>(in, 1, 72);
-  mirror_side = ((read_be<uint8_t>(in, 1, 73) & 0x01) > 0) ? REAR : FRONT;
-  mirror_tilt = read_be<int16_t>(in, 2, 78);
-  number_of_scan_points = read_be<uint16_t>(in, 2, 86);
+  angle_ticks_per_rotation = read_be<uint16_t>(in, hdr + 6);
+  scan_flags = read_be<uint32_t>(in, hdr + 8);
+  mounting_yaw_angle_ticks = read_be<int16_t>(in, hdr + 12);
+  mounting_pitch_angle_ticks = read_be<int16_t>(in, hdr + 14);
+  mounting_roll_angle_ticks = read_be<int16_t>(in, hdr + 16);
+  mounting_position_x = read_be<int16_t>(in, hdr + 18);
+  mounting_position_y = read_be<int16_t>(in, hdr + 20);
+  mounting_position_z = read_be<int16_t>(in, hdr + 22);
+  device_id = read_be<uint8_t>(in, hdr + 50);
+  scan_start_time = read_be<NTPTime>(in, hdr + 52);
+  scan_end_time = read_be<NTPTime>(in, hdr + 60);
+  start_angle_ticks = read_be<int16_t>(in, hdr + 68);
+  end_angle_ticks = read_be<int16_t>(in, hdr + 70);
+  subflags = read_be<uint8_t>(in, hdr + 72);
+  mirror_side = ((read_be<uint8_t>(in, hdr + 73) & 0x01) > 0) ? REAR : FRONT;
+  mirror_tilt = read_be<int16_t>(in, hdr + 78);
+  number_of_scan_points = read_be<uint16_t>(in, hdr + 86);
 
   for (uint16_t i = 0; i < number_of_scan_points; i++)
   {
     ScanPoint2208 new_scan_point;
-    new_scan_point.parse(&in[88 + i * 11]);
+    new_scan_point.parse(in, hdr + 88 + (i * 11));
     scan_point_list.push_back(new_scan_point);
   }
 }
@@ -928,21 +950,21 @@ ObjectData2221::ObjectData2221() :
   IbeoTxMessage(false, true, true)
 {}
 
-void ObjectData2221::parse(uint8_t *in)
+void ObjectData2221::parse(const std::vector<uint8_t>& in)
 {
   ibeo_header.parse(in);
 
-  in = &in[IBEO_HEADER_SIZE];
+  uint16_t hdr = IBEO_HEADER_SIZE;
 
-  scan_start_timestamp = read_le<NTPTime>(in, 8, 0);
-  number_of_objects = read_le<uint16_t>(in, 2, 8);
+  scan_start_timestamp = read_le<NTPTime>(in, hdr);
+  number_of_objects = read_le<uint16_t>(in, hdr + 8);
 
-  uint32_t offset = 10;
+  uint32_t offset = hdr + 10;
 
   for (uint16_t i = 0; i < number_of_objects; i++)
   {
     Object2221 new_object;
-    new_object.parse(&in[offset]);
+    new_object.parse(in, offset);
     object_list.push_back(new_object);
     offset += 58;  // Size of object without contour points.
     offset += new_object.number_of_contour_points * 4;  // Size of object's contour points.
@@ -1023,21 +1045,21 @@ ObjectData2225::ObjectData2225() :
   IbeoTxMessage(false, true, true)
 {}
 
-void ObjectData2225::parse(uint8_t *in)
+void ObjectData2225::parse(const std::vector<uint8_t>& in)
 {
   ibeo_header.parse(in);
 
-  in = &in[IBEO_HEADER_SIZE];
+  uint16_t hdr = IBEO_HEADER_SIZE;
 
-  mid_scan_timestamp = read_be<NTPTime>(in, 8, 0);
-  number_of_objects = read_be<uint16_t>(in, 2, 8);
+  mid_scan_timestamp = read_be<NTPTime>(in, hdr);
+  number_of_objects = read_be<uint16_t>(in, hdr + 8);
 
-  uint32_t offset = 10;
+  uint32_t offset = hdr + 10;
 
   for (uint16_t i = 0; i < number_of_objects; i++)
   {
     Object2225 new_object;
-    new_object.parse(&in[offset]);
+    new_object.parse(in, offset);
     object_list.push_back(new_object);
     offset += 132;                                      // Add size of single object without contour points.
     offset += new_object.number_of_contour_points * 8;  // Add size of just-parsed object's contour points.
@@ -1115,22 +1137,22 @@ ObjectData2270::ObjectData2270() :
   IbeoTxMessage(false, true, true)
 {}
 
-void ObjectData2270::parse(uint8_t *in)
+void ObjectData2270::parse(const std::vector<uint8_t>& in)
 {
   ibeo_header.parse(in);
 
-  in = &in[IBEO_HEADER_SIZE];
+  uint16_t hdr = IBEO_HEADER_SIZE;
 
-  start_scan_timestamp = read_le<NTPTime>(in, 8, 0);
-  object_list_number = read_le<uint16_t>(in, 2, 8);
-  number_of_objects = read_le<uint16_t>(in, 2, 10);
+  start_scan_timestamp = read_le<NTPTime>(in, hdr);
+  object_list_number = read_le<uint16_t>(in, hdr + 8);
+  number_of_objects = read_le<uint16_t>(in, hdr + 10);
 
-  uint32_t offset = 12;
+  uint32_t offset = hdr + 12;
 
   for (uint16_t i = 0; i < number_of_objects; i++)
   {
     Object2270 new_object;
-    new_object.parse(&in[offset]);
+    new_object.parse(in, offset);
     object_list.push_back(new_object);
 
     offset += 76;                                       // Add size of single object without contour points.
@@ -1249,22 +1271,22 @@ ObjectData2271::ObjectData2271() :
   IbeoTxMessage(false, true, true)
 {}
 
-void ObjectData2271::parse(uint8_t *in)
+void ObjectData2271::parse(const std::vector<uint8_t>& in)
 {
   ibeo_header.parse(in);
 
-  in = &in[IBEO_HEADER_SIZE];
+  uint16_t hdr = IBEO_HEADER_SIZE;
 
-  start_scan_timestamp = read_be<NTPTime>(in, 8, 0);
-  scan_number = read_be<uint16_t>(in, 2, 8);
-  number_of_objects = read_be<uint16_t>(in, 2, 18);
+  start_scan_timestamp = read_be<NTPTime>(in, hdr);
+  scan_number = read_be<uint16_t>(in, hdr + 8);
+  number_of_objects = read_be<uint16_t>(in, hdr + 18);
 
-  uint32_t offset = 20;
+  uint32_t offset = hdr + 20;
 
   for (uint16_t i = 0; i < number_of_objects; i++)
   {
     Object2271 new_object;
-    new_object.parse(&in[offset]);
+    new_object.parse(in, offset);
     object_list.push_back(new_object);
 
     // calculate offset for the next object (i+1)
@@ -1436,21 +1458,21 @@ ObjectData2280::ObjectData2280() :
   IbeoTxMessage(false, true, true)
 {}
 
-void ObjectData2280::parse(uint8_t *in)
+void ObjectData2280::parse(const std::vector<uint8_t>& in)
 {
   ibeo_header.parse(in);
 
-  in = &in[IBEO_HEADER_SIZE];
+  uint16_t hdr = IBEO_HEADER_SIZE;
 
-  mid_scan_timestamp = read_be<NTPTime>(in, 8, 0);
-  number_of_objects = read_be<uint16_t>(in, 2, 8);
+  mid_scan_timestamp = read_be<NTPTime>(in, hdr);
+  number_of_objects = read_be<uint16_t>(in, hdr + 8);
 
-  uint32_t offset = 10;
+  uint32_t offset = hdr + 10;
 
   for (uint16_t i = 0; i < number_of_objects; i++)
   {
     Object2280 new_object;
-    new_object.parse(&in[offset]);
+    new_object.parse(in, offset);
 
     object_list.push_back(new_object);
 
@@ -1532,26 +1554,26 @@ CameraImage::CameraImage() :
   IbeoTxMessage()
 {}
 
-void CameraImage::parse(uint8_t *in)
+void CameraImage::parse(const std::vector<uint8_t>& in)
 {
   ibeo_header.parse(in);
 
-  in = &in[IBEO_HEADER_SIZE];
+  uint16_t hdr = IBEO_HEADER_SIZE;
 
-  image_format = static_cast<ImageFormat>(read_be<uint16_t>(in, 2, 0));
-  us_since_power_on = read_be<uint32_t>(in, 4, 2);
-  timestamp = read_be<NTPTime>(in, 8, 6);
-  device_id = read_be<uint8_t>(in, 1, 14);
-  mounting_position.parse(&in[15]);
-  horizontal_opening_angle = read_be<double>(in, 8, 39);
-  vertical_opening_angle = read_be<double>(in, 8, 47);
-  image_width = read_be<uint16_t>(in, 2, 55);
-  image_height = read_be<uint16_t>(in, 2, 57);
-  compressed_size = read_be<uint32_t>(in, 4, 59);
+  image_format = static_cast<ImageFormat>(read_be<uint16_t>(in, hdr));
+  us_since_power_on = read_be<uint32_t>(in, hdr + 2);
+  timestamp = read_be<NTPTime>(in, hdr + 6);
+  device_id = read_be<uint8_t>(in, hdr + 14);
+  mounting_position.parse(in, hdr + 15);
+  horizontal_opening_angle = read_be<double>(in, hdr + 39);
+  vertical_opening_angle = read_be<double>(in, hdr + 47);
+  image_width = read_be<uint16_t>(in, hdr + 55);
+  image_height = read_be<uint16_t>(in, hdr + 57);
+  compressed_size = read_be<uint32_t>(in, hdr + 59);
 
   for (uint32_t i = 0; i < compressed_size; i++)
   {
-    image_buffer.push_back(in[63 + i]);
+    image_buffer.push_back(in[hdr + 63 + i]);
   }
 }
 
@@ -1559,101 +1581,101 @@ HostVehicleState2805::HostVehicleState2805() :
   IbeoTxMessage()
 {}
 
-void HostVehicleState2805::parse(uint8_t *in)
+void HostVehicleState2805::parse(const std::vector<uint8_t>& in)
 {
   ibeo_header.parse(in);
 
-  in = &in[IBEO_HEADER_SIZE];
+  uint16_t hdr = IBEO_HEADER_SIZE;
 
-  timestamp = read_le<NTPTime>(in, 8, 0);
-  scan_number = read_le<uint16_t>(in, 2, 8);
-  error_flags = read_le<uint16_t>(in, 2, 10);
-  longitudinal_velocity = read_le<int16_t>(in, 2, 12);
-  steering_wheel_angle = read_le<int16_t>(in, 2, 14);
-  front_wheel_angle = read_le<int16_t>(in, 2, 16);
-  x_position = read_le<int32_t>(in, 4, 20);
-  y_position = read_le<int32_t>(in, 4, 24);
-  course_angle = read_le<int16_t>(in, 2, 28);
-  time_difference = read_le<uint16_t>(in, 2, 30);
-  x_difference = read_le<int16_t>(in, 2, 32);
-  y_difference = read_le<int16_t>(in, 2, 34);
-  heading_difference = read_le<int16_t>(in, 2, 36);
-  current_yaw_rate = read_le<int16_t>(in, 2, 40);
+  timestamp = read_le<NTPTime>(in, hdr);
+  scan_number = read_le<uint16_t>(in, hdr + 8);
+  error_flags = read_le<uint16_t>(in, hdr + 10);
+  longitudinal_velocity = read_le<int16_t>(in, hdr + 12);
+  steering_wheel_angle = read_le<int16_t>(in, hdr + 14);
+  front_wheel_angle = read_le<int16_t>(in, hdr + 16);
+  x_position = read_le<int32_t>(in, hdr + 20);
+  y_position = read_le<int32_t>(in, hdr + 24);
+  course_angle = read_le<int16_t>(in, hdr + 28);
+  time_difference = read_le<uint16_t>(in, hdr + 30);
+  x_difference = read_le<int16_t>(in, hdr + 32);
+  y_difference = read_le<int16_t>(in, hdr + 34);
+  heading_difference = read_le<int16_t>(in, hdr + 36);
+  current_yaw_rate = read_le<int16_t>(in, hdr + 40);
 }
 
 HostVehicleState2806::HostVehicleState2806() :
   IbeoTxMessage()
 {}
 
-void HostVehicleState2806::parse(uint8_t *in)
+void HostVehicleState2806::parse(const std::vector<uint8_t>& in)
 {
   ibeo_header.parse(in);
 
-  in = &in[IBEO_HEADER_SIZE];
+  uint16_t hdr = IBEO_HEADER_SIZE;
 
-  timestamp = read_le<NTPTime>(in, 8, 4);
-  distance_x = read_le<int32_t>(in, 4, 12);
-  distance_y = read_le<int32_t>(in, 4, 16);
-  course_angle = read_le<float>(in, 4, 24);
-  longitudinal_velocity = read_le<float>(in, 4, 28);
-  yaw_rate = read_le<float>(in, 4, 24);
-  steering_wheel_angle = read_le<float>(in, 4, 32);
-  cross_acceleration = read_le<float>(in, 4, 36);
-  front_wheel_angle = read_le<float>(in, 4, 40);
-  vehicle_width = read_le<float>(in, 4, 46);
-  vehicle_front_to_front_axle = read_le<float>(in, 4, 54);
-  rear_axle_to_front_axle = read_le<float>(in, 4, 58);
-  rear_axle_to_vehicle_rear = read_le<float>(in, 4, 62);
-  steer_ratio_poly_0 = read_le<float>(in, 4, 70);
-  steer_ratio_poly_1 = read_le<float>(in, 4, 74);
-  steer_ratio_poly_2 = read_le<float>(in, 4, 78);
-  steer_ratio_poly_3 = read_le<float>(in, 4, 82);
+  timestamp = read_le<NTPTime>(in, hdr + 4);
+  distance_x = read_le<int32_t>(in, hdr + 12);
+  distance_y = read_le<int32_t>(in, hdr + 16);
+  course_angle = read_le<float>(in, hdr + 24);
+  longitudinal_velocity = read_le<float>(in, hdr + 28);
+  yaw_rate = read_le<float>(in, hdr + 24);
+  steering_wheel_angle = read_le<float>(in, hdr + 32);
+  cross_acceleration = read_le<float>(in, hdr + 36);
+  front_wheel_angle = read_le<float>(in, hdr + 40);
+  vehicle_width = read_le<float>(in, hdr + 46);
+  vehicle_front_to_front_axle = read_le<float>(in, hdr + 54);
+  rear_axle_to_front_axle = read_le<float>(in, hdr + 58);
+  rear_axle_to_vehicle_rear = read_le<float>(in, hdr + 62);
+  steer_ratio_poly_0 = read_le<float>(in, hdr + 70);
+  steer_ratio_poly_1 = read_le<float>(in, hdr + 74);
+  steer_ratio_poly_2 = read_le<float>(in, hdr + 78);
+  steer_ratio_poly_3 = read_le<float>(in, hdr + 82);
 }
 
 HostVehicleState2807::HostVehicleState2807() :
   HostVehicleState2806()
 {}
 
-void HostVehicleState2807::parse(uint8_t *in)
+void HostVehicleState2807::parse(const std::vector<uint8_t>& in)
 {
   ibeo_header.parse(in);
 
-  in = &in[IBEO_HEADER_SIZE];
+  uint16_t hdr = IBEO_HEADER_SIZE;
 
-  timestamp = read_le<NTPTime>(in, 8, 4);
-  distance_x = read_le<int32_t>(in, 4, 12);
-  distance_y = read_le<int32_t>(in, 4, 16);
-  course_angle = read_le<float>(in, 4, 24);
-  longitudinal_velocity = read_le<float>(in, 4, 28);
-  yaw_rate = read_le<float>(in, 4, 24);
-  steering_wheel_angle = read_le<float>(in, 4, 32);
-  cross_acceleration = read_le<float>(in, 4, 36);
-  front_wheel_angle = read_le<float>(in, 4, 40);
-  vehicle_width = read_le<float>(in, 4, 46);
-  vehicle_front_to_front_axle = read_le<float>(in, 4, 54);
-  rear_axle_to_front_axle = read_le<float>(in, 4, 58);
-  rear_axle_to_vehicle_rear = read_le<float>(in, 4, 62);
-  steer_ratio_poly_0 = read_le<float>(in, 4, 70);
-  steer_ratio_poly_1 = read_le<float>(in, 4, 74);
-  steer_ratio_poly_2 = read_le<float>(in, 4, 78);
-  steer_ratio_poly_3 = read_le<float>(in, 4, 82);
+  timestamp = read_le<NTPTime>(in, hdr + 4);
+  distance_x = read_le<int32_t>(in, hdr + 12);
+  distance_y = read_le<int32_t>(in, hdr + 16);
+  course_angle = read_le<float>(in, hdr + 24);
+  longitudinal_velocity = read_le<float>(in, hdr + 28);
+  yaw_rate = read_le<float>(in, hdr + 24);
+  steering_wheel_angle = read_le<float>(in, hdr + 32);
+  cross_acceleration = read_le<float>(in, hdr + 36);
+  front_wheel_angle = read_le<float>(in, hdr + 40);
+  vehicle_width = read_le<float>(in, hdr + 46);
+  vehicle_front_to_front_axle = read_le<float>(in, hdr + 54);
+  rear_axle_to_front_axle = read_le<float>(in, hdr + 58);
+  rear_axle_to_vehicle_rear = read_le<float>(in, hdr + 62);
+  steer_ratio_poly_0 = read_le<float>(in, hdr + 70);
+  steer_ratio_poly_1 = read_le<float>(in, hdr + 74);
+  steer_ratio_poly_2 = read_le<float>(in, hdr + 78);
+  steer_ratio_poly_3 = read_le<float>(in, hdr + 82);
 
-  longitudinal_acceleration = read_le<float>(in, 4, 86 + IBEO_HEADER_SIZE);
+  longitudinal_acceleration = read_le<float>(in, hdr + 86);
 }
 
 DeviceStatus::DeviceStatus() :
   IbeoTxMessage()
 {}
 
-void DeviceStatus::parse(uint8_t *in)
+void DeviceStatus::parse(const std::vector<uint8_t>& in)
 {
   ibeo_header.parse(in);
 
-  in = &in[IBEO_HEADER_SIZE];
+  uint16_t hdr = IBEO_HEADER_SIZE;
 
-  scanner_type = read_le<uint8_t>(in, 1, 6);
-  sensor_temperature = read_le<float>(in, 4, 36);
-  frequency = read_le<float>(in, 4, 40);
+  scanner_type = read_le<uint8_t>(in, hdr + 6);
+  sensor_temperature = read_le<float>(in, hdr + 36);
+  frequency = read_le<float>(in, hdr + 40);
 }
 
 void CommandSetFilter::encode()
