@@ -11,6 +11,7 @@ jobs:
             apt-get update -qq
             source `find /opt/ros -name setup.bash | sort | head -1`
             mkdir ibeo_core && mv `find -maxdepth 1 -not -name . -not -name ibeo_core` ibeo_core/
+            git clone https://github.com/astuff/network_interface src/network_interface
             rosdep install --from-paths . --ignore-src -y
             cd ..
             catkin init
@@ -40,6 +41,7 @@ jobs:
             apt-get update -qq
             source `find /opt/ros -name setup.bash | sort | head -1`
             mkdir ibeo_core && mv `find -maxdepth 1 -not -name . -not -name ibeo_core` ibeo_core/
+            git clone https://github.com/astuff/network_interface src/network_interface
             rosdep install --from-paths . --ignore-src -y
             cd ..
             catkin init
