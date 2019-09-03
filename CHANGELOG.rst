@@ -2,6 +2,10 @@
 Changelog for package ibeo_core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.3 (2019-09-01)
+------------------
+* Seeing problems with the Ibeo Lux ROS driver. Going back to a known working commit. 
+
 2.0.2 (2018-12-07)
 ------------------
 * Merge pull request `#8 <https://github.com/astuff/ibeo_core/issues/8>`_ from ShepelIlya/master

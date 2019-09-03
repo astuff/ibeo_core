@@ -1498,6 +1498,9 @@ std::vector<IbeoObject> ObjectData2280::get_objects()
     io.relative_timestamp = 0;
     io.bounding_box_size.size_x = o.object_box_size.x;
     io.bounding_box_size.size_y = o.object_box_size.y;
+    io.object_box_size.size_x = o.object_box_size.x;
+    io.object_box_size.size_y = o.object_box_size.y;
+    
     io.object_box_orientation = o.object_box_orientation_angle;
 
     io.object_box_center.x = o.object_box_center.x;
