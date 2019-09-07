@@ -275,6 +275,29 @@ public:
     const uint16_t& offset);
 };
 
+class ScannerInfo2209
+{
+public:
+  uint8_t device_id;
+  uint8_t scanner_type;
+  uint16_t scan_number;
+  float start_angle;
+  float end_angle;
+  NTPTime scan_start_time;
+  NTPTime scan_end_time;
+  NTPTime scan_start_time_from_device;
+  NTPTime scan_end_time_from_device;
+  float scan_frequency;
+  float beam_tilt;
+  uint32_t scan_flags;
+  MountingPositionF mounting_position;
+  ResolutionInfo resolutions[8];
+
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset);
+};
+
 class UntrackedProperties
 {
 public:
@@ -404,6 +427,28 @@ public:
     const std::vector<uint8_t>& in,
     const uint16_t& offset);
 };
+
+class ScanPoint2209
+{
+public:
+  float x_position;
+  float y_position;
+  float z_position;
+  float echo_width;
+  uint8_t device_id;
+  uint8_t layer;
+  uint8_t echo;
+  uint32_t time_offset;
+  bool ground;
+  bool dirt;
+  bool precipitation;
+  bool transparent;
+
+  void parse(
+    const std::vector<uint8_t>& in,
+    const uint16_t& offset);
+};
+
 
 struct IbeoObject
 {
@@ -772,6 +817,28 @@ public:
   std::vector<ScanPoint2208> scan_point_list;
 
   ScanData2208();
+
+  void parse(const std::vector<uint8_t>& in);
+  std::vector<Point3DL> get_scan_points();
+};
+
+class ScanData2209 : public IbeoTxMessage
+{
+public:
+  static const int32_t DATA_TYPE;
+
+  NTPTime scan_start_time;
+  uint32_t scan_end_time_offset;
+  bool fused_scan;
+  MirrorSide mirror_side;
+  CoordinateSystem coordinate_system;
+  uint16_t scan_number;
+  uint16_t scan_points;
+  uint8_t number_of_scanner_infos;
+  std::vector<ScannerInfo2209> scanner_info_list;
+  std::vector<ScanPoint2209> scan_point_list;
+
+  ScanData2209();
 
   void parse(const std::vector<uint8_t>& in);
   std::vector<Point3DL> get_scan_points();

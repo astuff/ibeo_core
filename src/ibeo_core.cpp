@@ -30,6 +30,7 @@ const int32_t AS::Drivers::Ibeo::ScanData2202::DATA_TYPE = 0x2202;
 const int32_t AS::Drivers::Ibeo::ScanData2204::DATA_TYPE = 0x2204;
 const int32_t AS::Drivers::Ibeo::ScanData2205::DATA_TYPE = 0x2205;
 const int32_t AS::Drivers::Ibeo::ScanData2208::DATA_TYPE = 0x2208;
+const int32_t AS::Drivers::Ibeo::ScanData2205::DATA_TYPE = 0x2209;
 const int32_t AS::Drivers::Ibeo::ObjectData2221::DATA_TYPE = 0x2221;
 const int32_t AS::Drivers::Ibeo::ObjectData2225::DATA_TYPE = 0x2225;
 const int32_t AS::Drivers::Ibeo::ObjectData2270::DATA_TYPE = 0x2270;
@@ -131,6 +132,31 @@ void ScannerInfo2204::parse(const std::vector<uint8_t>& in, const uint16_t& offs
 }
 
 void ScannerInfo2205::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
+{
+  device_id = read_be<uint8_t>(in, offset);
+  scanner_type = read_be<uint8_t>(in, offset + 1);
+  scan_number = read_be<uint16_t>(in, offset + 2);
+  start_angle = read_be<float>(in, offset + 8);
+  end_angle = read_be<float>(in, offset + 12);
+  scan_start_time = read_be<NTPTime>(in, offset + 16);
+  scan_end_time = read_be<NTPTime>(in, offset + 24);
+  scan_start_time_from_device = read_be<NTPTime>(in, offset + 32);
+  scan_end_time_from_device = read_be<NTPTime>(in, offset + 40);
+  scan_frequency = read_be<float>(in, offset + 48);
+  beam_tilt = read_be<float>(in, offset + 52);
+  scan_flags = read_be<float>(in, offset + 56);
+  mounting_position.parse(in, offset + 60);
+  resolutions[0].parse(in, offset + 84);
+  resolutions[1].parse(in, offset + 92);
+  resolutions[2].parse(in, offset + 100);
+  resolutions[3].parse(in, offset + 108);
+  resolutions[4].parse(in, offset + 116);
+  resolutions[5].parse(in, offset + 124);
+  resolutions[6].parse(in, offset + 132);
+  resolutions[7].parse(in, offset + 140);
+}
+
+void ScannerInfo2209::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
 {
   device_id = read_be<uint8_t>(in, offset);
   scanner_type = read_be<uint8_t>(in, offset + 1);
@@ -281,6 +307,23 @@ void ScanPoint2208::parse(const std::vector<uint8_t>& in, const uint16_t& offset
   horizontal_angle = read_be<int16_t>(in, offset + 4);
   radial_distance = read_be<uint16_t>(in, offset + 6);
   echo_pulse_width = read_be<uint16_t>(in, offset + 8);
+}
+
+void ScanPoint2209::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
+{
+  x_position = read_be<float>(in, offset);
+  y_position = read_be<float>(in, offset + 4);
+  z_position = read_be<float>(in, offset + 8);
+  echo_width = read_be<float>(in, offset + 12);
+  device_id = read_be<uint8_t>(in, offset + 16);
+  layer = read_be<uint8_t>(in, offset + 17);
+  echo = read_be<uint8_t>(in, offset + 18);
+  time_offset = read_be<uint8_t>(in, offset + 20);
+  uint16_t flags = read_be<uint8_t>(in, offset + 24);
+  ground = ((flags & 0x0001) > 0);
+  dirt = ((flags & 0x0002) > 0);
+  precipitation = ((flags & 0x0004) > 2);
+  transparent = ((flags & 0x1000) > 12);
 }
 
 void Object2221::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
@@ -540,6 +583,9 @@ std::shared_ptr<IbeoTxMessage> IbeoTxMessage::make_message(const uint16_t& data_
     break;
   case ScanData2208::DATA_TYPE:
     return std::shared_ptr<IbeoTxMessage>(new ScanData2208);
+    break;
+  case ScanData2209::DATA_TYPE:
+    return std::shared_ptr<IbeoTxMessage>(new ScanData2209);
     break;
   case ObjectData2221::DATA_TYPE:
     return std::shared_ptr<IbeoTxMessage>(new ObjectData2221);
@@ -939,6 +985,66 @@ std::vector<Point3DL> ScanData2208::get_scan_points()
 
       p3d.label = sp.layer;
 
+      v.push_back(p3d);
+    }
+  }
+
+  return v;
+}
+
+ScanData2209::ScanData2209() :
+  IbeoTxMessage(true, false, false)
+{}
+
+void ScanData2209::parse(const std::vector<uint8_t>& in)
+{
+  ibeo_header.parse(in);
+
+  uint16_t hdr = IBEO_HEADER_SIZE;
+
+  scan_start_time = read_be<NTPTime>(in, hdr);
+  scan_end_time_offset = read_be<uint32_t>(in, hdr + 8);
+
+  uint32_t flags = read_be<uint32_t>(in, hdr + 12);
+  fused_scan = ((flags & 0x00000100) > 0);
+  mirror_side = ((flags & 0x00000200) > 0) ? REAR : FRONT;
+  coordinate_system = ((flags & 0x00000400) > 0) ? VEHICLE : SCANNER;
+
+  scan_number = read_be<uint16_t>(in, hdr + 16);
+  scan_points = read_be<uint32_t>(in, hdr + 18);
+  number_of_scanner_infos = read_be<uint8_t>(in, hdr + 22);
+
+  // printf("%d SCAN POINTS REPORTED\n", scan_points);
+
+  for (uint8_t i = 0; i < number_of_scanner_infos; i++)
+  {
+    ScannerInfo2209 new_scanner_info;
+    new_scanner_info.parse(in, hdr + 26 + (i * 148));
+    scanner_info_list.push_back(new_scanner_info);
+  }
+
+  for (uint16_t i = 0; i < scan_points; i++)
+  {
+    ScanPoint2209 new_scan_point;
+    new_scan_point.parse(in, hdr + 26 + (number_of_scanner_infos * 148) + (i * 28));
+    scan_point_list.push_back(new_scan_point);
+  }
+}
+
+std::vector<Point3DL> ScanData2209::get_scan_points()
+{
+  std::vector<Point3DL> v;
+
+  for (ScanPoint2209 sp : scan_point_list)
+  {
+    if (sp.echo == 0 && sp.layer < 4 && !sp.transparent && !sp.ground && !sp.dirt && !sp.precipitation)
+    {
+      Point3DL p3d;
+
+      p3d.x = sp.x_position;
+      p3d.y = sp.y_position;
+      p3d.z = sp.z_position;
+      p3d.label = sp.layer;
       v.push_back(p3d);
     }
   }
