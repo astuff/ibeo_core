@@ -833,7 +833,7 @@ public:
   MirrorSide mirror_side;
   CoordinateSystem coordinate_system;
   uint16_t scan_number;
-  uint16_t scan_points;
+  uint32_t scan_points;
   uint8_t number_of_scanner_infos;
   std::vector<ScannerInfo2209> scanner_info_list;
   std::vector<ScanPoint2209> scan_point_list;
