@@ -343,7 +343,7 @@ public:
 
   void parse(
     const std::vector<uint8_t>& in,
-    const uint16_t& offset);
+    const uint32_t& offset);
 };
 
 class ScanPoint2204
@@ -363,7 +363,7 @@ public:
 
   void parse(
     const std::vector<uint8_t>& in,
-    const uint16_t& offset);
+    const uint32_t& offset);
 };
 
 class ScanPoint2205
@@ -384,7 +384,7 @@ public:
 
   void parse(
     const std::vector<uint8_t>& in,
-    const uint16_t& offset);
+    const uint32_t& offset);
 };
 
 class ScanPoint2208
@@ -402,7 +402,7 @@ public:
 
   void parse(
     const std::vector<uint8_t>& in,
-    const uint16_t& offset);
+    const uint32_t& offset);
 };
 
 struct IbeoObject
