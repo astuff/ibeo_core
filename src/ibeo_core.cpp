@@ -218,7 +218,7 @@ void TrackedProperties::parse(const std::vector<uint8_t>& in, const uint16_t& of
   }
 }
 
-void ScanPoint2202::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
+void ScanPoint2202::parse(const std::vector<uint8_t>& in, const uint32_t& offset)
 {
   uint8_t layer_and_offset = read_le<uint8_t>(in, offset);
   std::cout << std::hex;
@@ -234,7 +234,7 @@ void ScanPoint2202::parse(const std::vector<uint8_t>& in, const uint16_t& offset
   echo_pulse_width = read_le<uint16_t>(in, offset + 6);
 }
 
-void ScanPoint2204::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
+void ScanPoint2204::parse(const std::vector<uint8_t>& in, const uint32_t& offset)
 {
   x_position = read_be<float>(in, offset + 0);
   y_position = read_be<float>(in, offset + 4);
@@ -252,7 +252,7 @@ void ScanPoint2204::parse(const std::vector<uint8_t>& in, const uint16_t& offset
   precipitation = ((flags & 0x0004) > 0);
 }
 
-void ScanPoint2205::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
+void ScanPoint2205::parse(const std::vector<uint8_t>& in, const uint32_t& offset)
 {
   x_position = read_be<float>(in, offset);
   y_position = read_be<float>(in, offset + 4);
@@ -269,7 +269,7 @@ void ScanPoint2205::parse(const std::vector<uint8_t>& in, const uint16_t& offset
   transparent = ((flags & 0x1000) > 12);
 }
 
-void ScanPoint2208::parse(const std::vector<uint8_t>& in, const uint16_t& offset)
+void ScanPoint2208::parse(const std::vector<uint8_t>& in, const uint32_t& offset)
 {
   echo = (read_be<uint8_t>(in, offset) & 0x0C);
   layer = read_be<uint8_t>(in, offset + 1);  // & 0x03; < should be whole byte, but this gives unexpected results.
